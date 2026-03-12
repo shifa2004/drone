@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambulance Patrol Drone - IIITDM Kurnool</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #e63946;
+            --secondary: #1d3557;
+            --accent: #a8dadc;
+            --light: #f1faee;
+            --dark: #0d1b2a;
+            --success: #2a9d8f;
+            --warning: #e9c46a;
+            --danger: #e76f51;
+            --iiit-blue: #1a3a5f;
+            --iiit-gold: #d4af37;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: var(--light);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(168, 218, 220, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            animation: pulse 2s infinite;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .logo-line-1 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--iiit-gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .logo-line-2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            margin: 3px 0;
+        }
+
+        /* Navigation */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-menu a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            background: rgba(168, 218, 220, 0.2);
+        }
+
+        /* Main Content */
+        .main-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .main-title h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .main-title p {
+            font-size: 1.1rem;
+            color: var(--accent);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .service-card {
+            background: rgba(29, 53, 87, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(168, 218, 220, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .service-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .service-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--light);
+        }
+
+        .service-card p {
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 25px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #f0545e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(13, 27, 42, 0.9);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: rgba(29, 53, 87, 0.95);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 800px;
+            width: 90%;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--accent);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            color: var(--accent);
+            cursor: pointer;
+        }
+
+        /* Team Member Styling */
+        .team-members-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .team-member {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .team-member img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .team-member p {
+            margin: 0;
+        }
+
+        /* Auth Forms */
+        .auth-form {
+            padding: 20px;
+        }
+
+        .auth-form h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--light);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(13, 27, 42, 0.7);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            color: var(--light);
+            font-size: 1rem;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .form-switch {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--accent);
+        }
+
+        .form-switch a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+            border-top: 1px solid rgba(168, 218, 220, 0.3);
+            color: var(--accent);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .nav-toggle {
+                display: block;
+            }
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 80px;
+                right: 20px;
+                background: rgba(29, 53, 87, 0.95);
+                flex-direction: column;
+                width: 200px;
+                border-radius: 10px;
+                padding: 15px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+                border: 1px solid rgba(168, 218, 220, 0.3);
+                z-index: 100;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .main-title h1 {
+                font-size: 2rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Status Indicator */
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-connected {
+            background-color: var(--success);
+        }
+        
+        .status-disconnected {
+            background-color: var(--danger);
+        }
+        
+        .connection-status {
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(29, 53, 87, 0.7);
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-ambulance logo-icon"></i>
+                <div class="logo-text">
+                    <div class="logo-line-1">IIITDM Kurnool</div>
+                    <div class="logo-line-2">Ambulance Patrol Drone</div>
+                </div>
+            </div>
+            
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <nav class="nav-menu" id="navMenu">
+                <a href="#" id="homeLink">Home</a>
+                <a href="#" id="registerLink">Register</a>
+                <a href="#" id="registeredUsersLink">Registered Drone and Doctors</a>
+                <a href="#" id="aboutLink">About</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="main-title">
+                <h1>Emergency Medical Response System</h1>
+                <p>Revolutionizing emergency healthcare with drone technology to provide faster response times and real-time medical assistance</p>
+            </div>
+
+            <div class="connection-status" id="connectionStatus">
+                <span class="status-indicator status-disconnected" id="statusIndicator"></span>
+                <span id="statusText">Not connected to server</span>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card" id="droneSimulator">
+                    <i class="fas fa-drone service-icon"></i>
+                    <h2 id="droneInterfaceTitle">Drone Interface</h2>
+                    <p id="droneInterfaceDescription">Experience our ambulance drone simulation to understand how it navigates traffic and provides real-time video feed to medical professionals.</p>
+                    <button class="btn">Drone Interface</button>
+                </div>
+
+                <div class="service-card" id="doctorInterface">
+                    <i class="fas fa-user-md service-icon"></i>
+                    <h2 id="doctorInterfaceTitle">Doctor Interface</h2>
+                    <p id="doctorInterfaceDescription">Medical professionals can monitor patients in real-time through drone cameras and provide immediate guidance to emergency responders.</p>
+                    <button class="btn">Access Doctor Panel</button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 IIITDM Kurnool - Ambulance Patrol Drone. All rights reserved.</p>
+            <p>Developed by Dr. K. Krishna Naik, Dr. M. Ravi Kumar and G. Kashifa Anjum</p>
+            <button class="btn" id="resetConnectionBtn" style="margin-top: 15px;">Reset Connection</button>
+        </footer>
+    </div>
+    <!-- Registration Modal -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeRegister">&times;</span>
+            <div class="auth-form">
+                <h2><i class="fas fa-user-plus"></i> Create Account</h2>
+                <form id="registrationForm">
+                    <div class="form-group">
+                        <label for="regName">Full Name</label>
+                        <input type="text" id="regName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regUserId">Choose User ID</label>
+                        <input type="text" id="regUserId" required pattern="[a-zA-Z0-9_]+" title="User ID can only contain letters, numbers, and underscores.">
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail">Email Address</label>
+                        <input type="email" id="regEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPhone">Phone Number</label>
+                        <input type="tel" id="regPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regUserType">Register As</label>
+                        <select id="regUserType" required>
+                            <option value="">Select User Type</option>
+                            <option value="doctor">Doctor</option>
+                            <option value="drone_operator">Drone Operator</option>
+                        </select>
+                    </div>
+
+                    <!-- Doctor Specific Fields -->
+                    <div id="doctorFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="regSpecialization">Specialization</label>
+                            <select id="regSpecialization">
+                                <option value="">Select Specialization</option>
+                                <option value="Emergency Medicine">Emergency Medicine</option>
+                                <option value="Cardiology">Cardiology</soption>
+                                <option value="Neurology">Neurology</option>
+                                <option value="Pediatrics">Pediatrics</option>
+                                <option value="Orthopedics">Orthopedics</option>
+                                <option value="General Surgery">General Surgery</option>
+                                <option value="Internal Medicine">Internal Medicine</option>
+                                <option value="Anesthesiology">Anesthesiology</option>
+                                <option value="Radiology">Radiology</option>
+                                <option value="Dermatology">Dermatology</option>
+                                <option value="Ophthalmology">Ophthalmology</option>
+                                <option value="Psychiatry">Psychiatry</option>
+                                <option value="Oncology">Oncology</option>
+                                <option value="Gastroenterology">Gastroenterology</option>
+                                <option value="Pulmonology">Pulmonology</option>
+                                <option value="Nephrology">Nephrology</option>
+                                <option value="Endocrinology">Endocrinology</option>
+                                <option value="Urology">Urology</option>
+                                <option value="Obstetrics and Gynecology">Obstetrics and Gynecology</option>
+                                <option value="Family Medicine">Family Medicine</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="regLicense">Medical License Number</label>
+                            <input type="text" id="regLicense" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regClinic">Clinic/Hospital Name</label>
+                            <input type="text" id="regClinic" required>
+                        </div>
+                    </div>
+
+                    <!-- Drone Operator Specific Fields -->
+                    <div id="operatorFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="regCity">City</label>
+                            <input type="text" id="regCity">
+                        </div>
+                        <div class="form-group">
+                            <label for="regVillage">Village</label>
+                            <input type="text" id="regVillage">
+                        </div>
+                        <div class="form-group">
+                            <label for="regState">State</label>
+                            <input type="text" id="regState">
+                        </div>
+                        <div class="form-group">
+                            <label for="regCountry">Country</label>
+                            <input type="text" id="regCountry">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="regPassword">Password</label>
+                        <input type="password" id="regPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regConfirmPassword">Confirm Password</label>
+                        <input type="password" id="regConfirmPassword" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn">Register</button>
+                    </div>
+                </form>
+                <div class="form-switch">
+                    Already have an account? <a href="#" id="showLogin">Login here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- User Type Selection Modal -->
+    <div class="modal" id="userTypeModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeUserType">&times;</span>
+            <div class="auth-form">
+                <h2><i class="fas fa-user-circle"></i> Select Your Role</h2>
+                <div style="display: flex; justify-content: space-around; margin-top: 30px;">
+                    <button class="btn" id="iamDroneOperatorBtn" style="padding: 15px 30px;">I am a Drone Operator</button>
+                    <button class="btn" id="iamDoctorBtn" style="padding: 15px 30px;">I am a Doctor</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctor Login/Connect Modal -->
+    <div class="modal" id="doctorConnectModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeDoctorConnect">&times;</span>
+            <div class="auth-form">
+                <h2><i class="fas fa-user-md"></i> Doctor Login & Connect</h2>
+                <div class="form-group">
+                    <label for="doctorNameSelect">Select Your Name:</label>
+                    <select id="doctorNameSelect" required>
+                        <option value="">-- Select Your Name --</option>
+                        <option value="Doctor1">Doctor1 (Cardiologist)</option>
+                        <option value="Doctor2">Doctor2 (General Physician)</option>
+                        <option value="Doctor3">Doctor3 (Orthopedic Surgeon)</option>
+                        <option value="Doctor4">Doctor4 (Emergency Physician)</option>
+                        <option value="Doctor5">Doctor6 (General Practitioner)</option>
+                      
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="droneToConnectSelect">Connect to Drone:</label>
+                    <select id="droneToConnectSelect" required>
+                        <option value="">-- Select Drone --</option>
+                        <option value="drone 1">Drone 1</option>
+                        <option value="drone 2">Drone 2</option>
+                        <option value="drone 3">Drone 3</option>
+                        <option value="drone 4">Drone 4</option>
+                        <option value="drone 5">Drone 5</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn" id="connectAsDoctorBtn">Connect</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Drone Operator Login/Connect Modal -->
+    <div class="modal" id="droneOperatorConnectModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeDroneOperatorConnect">&times;</span>
+            <div class="auth-form">
+                <h2><i class="fas fa-drone"></i> Drone Operator Login & Connect</h2>
+                <div class="form-group">
+                    <label for="droneOperatorNameSelect">Select Your Name:</label>
+                    <select id="droneOperatorNameSelect" required>
+                        <option value="">-- Select Your Name --</option>
+                        <option value="drone 1">Drone 1</option>
+                        <option value="drone 2">Drone 2</option>
+                        <option value="drone 3">Drone 3</option>
+                        <option value="drone 4">Drone 4</option>
+                        <option value="drone 5">Drone 5</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="doctorToConnectSelect">Connect to Doctor:</label>
+                    <select id="doctorToConnectSelect" required>
+                        <option value="">-- Select Doctor --</option>
+                         <option value="">-- Select Your Name --</option>
+                        <option value="Doctor1">Doctor1 (Cardiologist)</option>
+                        <option value="Doctor2">Doctor2 (General Physician)</option>
+                        <option value="Doctor3">Doctor3 (Orthopedic Surgeon)</option>
+                        <option value="Doctor4">Doctor4 (Emergency Physician)</option>
+                        <option value="Doctor5">Doctor6 (General Practitioner)</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn" id="connectAsDroneOperatorBtn">Connect</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- About Modal -->
+    <div class="modal" id="aboutModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeAbout">&times;</span>
+            <div style="padding: 20px;">
+                <h2 style="text-align: center; margin-bottom: 25px; color: var(--accent);">
+                    <i class="fas fa-info-circle"></i> About Ambulance Drone System
+                </h2>
+                <p style="color: var(--light); margin-bottom: 20px; line-height: 1.6;">
+                    The Ambulance Drone System is an innovative project developed at IIITDM Kurnool to revolutionize emergency medical response. 
+                    Our system combines drone technology with real-time video streaming to provide faster emergency response and enable remote 
+                    medical professionals to assess situations before the ambulance arrives.
+                </p>
+                <h3 style="color: var(--accent); margin: 25px 0 15px;">Key Features:</h3>
+                <ul style="color: var(--light); margin-bottom: 25px; padding-left: 20px; line-height: 1.6;">
+                    <li>Real-time traffic navigation using advanced routing algorithms</li>
+                    <li>Live video feed to medical professionals for remote assessment</li>
+                    <li>Two-way communication between emergency responders and doctors</li>
+                    <li>Automated traffic clearance alerts</li>
+                    <li>Integrated emergency call system</li>
+                </ul>
+                <h3 style="color: var(--accent); margin: 25px 0 15px;">Development Team:</h3>
+                <div class="team-members-container">
+                     <div class="team-members-container">
+                    <div class="team-member">
+                         <img src=https://raw.githubusercontent.com/shifa2004/testfile6/refs/heads/main/dr.k.krishna%20naik.png alt="Dr. K. Krishna Naik">
+                        <p><strong>Faculty Lead:</strong> Dr. K. Krishna Naik</p>
+                    </div>
+                    <div class="team-member">
+                        <img src= https://raw.githubusercontent.com/shifa2004/testfile6/refs/heads/main/gulam%20kashifa%20anjum.jpeg alt="G. Kashifa Anjum">
+                        <p><strong>Lead Developer:</strong> G. Kashifa Anjum</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+        // Initialize Socket.IO client
+        // Try connecting without specifying the full URL (let Socket.IO auto-detect)
+//const socket = io({
+   
+	//transports: ['websocket', 'polling'],
+    //autoConnect: true
+//});
+   //const socket = io('https//trigunrobotics.com/');
+/*	    const socket = io('https://trigunrobotics.com', {
+    path: '/socket.io',
+    transports: ['websocket', 'polling'],
+    secure: true
+});*/
+	const socket = io('https://trigunrobotics.com', {
+    path: '/socket.io',
+    transports: ['websocket', 'polling'],
+    secure: true
+});
+
+
+
+	// Navigation Toggle
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+
+        // Modal Elements
+        const registerModal = document.getElementById('registerModal');
+        const userTypeModal = document.getElementById('userTypeModal');
+        const doctorConnectModal = document.getElementById('doctorConnectModal');
+        const droneOperatorConnectModal = document.getElementById('droneOperatorConnectModal');
+        const aboutModal = document.getElementById('aboutModal');
+
+        // Navigation Links
+        const homeLink = document.getElementById('homeLink');
+        const registerLink = document.getElementById('registerLink');
+        const registeredUsersLink = document.getElementById('registeredUsersLink');
+        const aboutLink = document.getElementById('aboutLink');
+
+        // Close Buttons
+        const closeRegister = document.getElementById('closeRegister');
+        const closeUserType = document.getElementById('closeUserType');
+        const closeDoctorConnect = document.getElementById('closeDoctorConnect');
+        const closeDroneOperatorConnect = document.getElementById('closeDroneOperatorConnect');
+        const closeAbout = document.getElementById('closeAbout');
+
+        // Form Switch Links
+        const showRegisteredUsers = document.getElementById('showRegisteredUsers');
+        const showLogin = document.getElementById('showLogin'); // Added for the new registration code
+
+        // User Type Selection Buttons
+        const iamDroneOperatorBtn = document.getElementById('iamDroneOperatorBtn');
+        const iamDoctorBtn = document.getElementById('iamDoctorBtn');
+
+        // Doctor Connect Elements
+        const doctorNameSelect = document.getElementById('doctorNameSelect');
+        const droneToConnectSelect = document.getElementById('droneToConnectSelect');
+        const connectAsDoctorBtn = document.getElementById('connectAsDoctorBtn');
+
+        // Drone Operator Connect Elements
+        const droneOperatorNameSelect = document.getElementById('droneOperatorNameSelect');
+        const doctorToConnectSelect = document.getElementById('doctorToConnectSelect');
+        const connectAsDroneOperatorBtn = document.getElementById('connectAsDroneOperatorBtn');
+
+        // Service Card Elements
+        const droneInterfaceTitle = document.getElementById('droneInterfaceTitle');
+        const droneInterfaceDescription = document.getElementById('droneInterfaceDescription');
+        const doctorInterfaceTitle = document.getElementById('doctorInterfaceTitle');
+        const doctorInterfaceDescription = document.getElementById('doctorInterfaceDescription');
+
+        // Reset Connection Button
+        const resetConnectionBtn = document.getElementById('resetConnectionBtn');
+
+        // Connection Status Elements
+        const connectionStatus = document.getElementById('connectionStatus');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const statusText = document.getElementById('statusText');
+
+        // Function to close all modals
+        function closeAllModals() {
+            registerModal.style.display = 'none';
+            userTypeModal.style.display = 'none';
+            doctorConnectModal.style.display = 'none';
+            droneOperatorConnectModal.style.display = 'none';
+            aboutModal.style.display = 'none';
+        }
+
+        // Reset service cards to default state
+        function resetServiceCards() {
+            droneInterfaceTitle.textContent = 'Drone Interface';
+            droneInterfaceDescription.textContent = 'Experience our ambulance drone simulation to understand how it navigates traffic and provides real-time video feed to medical professionals.';
+            doctorInterfaceTitle.textContent = 'Doctor Interface';
+            doctorInterfaceDescription.textContent = 'Medical professionals can monitor patients in real-time through drone cameras and provide immediate guidance to emergency responders.';
+        }
+
+        // Update UI based on connection status
+        function updateUIWithConnection(connection) {
+            if (connection) {
+                if (connection.role === 'droneOperator') {
+                    droneInterfaceTitle.textContent = `${connection.operatorName} `;
+                    droneInterfaceDescription.textContent = `Operating drone, connected to ${connection.doctorName}.`;
+                    doctorInterfaceTitle.textContent = `${connection.doctorName} `;
+                    doctorInterfaceDescription.textContent = `Receiving feed from ${connection.operatorName}'s drone.`;
+                } else if (connection.role === 'doctor') {
+                    doctorInterfaceTitle.textContent = `${connection.doctorName} (Doctor)`;
+                    doctorInterfaceDescription.textContent = `Connected to ${connection.droneName}. Monitoring live feed.`;
+                    droneInterfaceTitle.textContent = `${connection.droneName} (Drone)`;
+                    droneInterfaceDescription.textContent = `Operated by ${connection.doctorName}. Ready for medical assistance.`;
+                }
+            } else {
+                resetServiceCards(); // Reset if no connection is stored
+            }
+        }
+
+        // Update connection status display
+        function updateConnectionStatus(isConnected, message) {
+            if (isConnected) {
+                statusIndicator.className = 'status-indicator status-connected';
+                statusText.textContent = message || 'Connected to server';
+            } else {
+                statusIndicator.className = 'status-indicator status-disconnected';
+                statusText.textContent = message || 'Not connected to server';
+            }
+        }
+
+        // Socket.IO event handlers
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            updateConnectionStatus(true, 'Connected to server');
+            
+            // Request current connection status from server
+            socket.emit('getConnectionStatus');
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+            updateConnectionStatus(false, 'Disconnected from server');
+        });
+
+        socket.on('connect_error', (error) => {
+            console.error('Connection error:', error);
+            updateConnectionStatus(false, 'Connection error. Server may be down.');
+        });
+
+        // Listen for connection status updates from the server
+        socket.on('currentConnectionStatus', (connection) => {
+            console.log('Received connection status:', connection);
+            
+            // Update localStorage to keep it consistent across tabs/windows of the same browser
+            if (connection) {
+                localStorage.setItem('currentConnection', JSON.stringify(connection));
+            } else {
+                localStorage.removeItem('currentConnection');
+            }
+            updateUIWithConnection(connection);
+        });
+
+        // Request connection status from server
+        socket.on('connectionStatusResponse', (connection) => {
+            console.log('Connection status response:', connection);
+            if (connection) {
+                localStorage.setItem('currentConnection', JSON.stringify(connection));
+            } else {
+                localStorage.removeItem('currentConnection');
+            }
+            updateUIWithConnection(connection);
+        });
+
+        // Initial UI setup on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialConnection = JSON.parse(localStorage.getItem('currentConnection'));
+            updateUIWithConnection(initialConnection);
+            
+            // Check if we're connected to the server
+            if (socket.connected) {
+                updateConnectionStatus(true, 'Connected to server');
+                socket.emit('getConnectionStatus');
+            } else {
+                updateConnectionStatus(false, 'Connecting to server...');
+            }
+        });
+
+        // Navigation Link Event Listeners
+        homeLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            navMenu.classList.remove('active');
+            closeAllModals();
+        });
+
+        registerLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            navMenu.classList.remove('active');
+            closeAllModals();
+            registerModal.style.display = 'block';
+            // Reset conditional fields visibility when opening registration form
+            document.getElementById('doctorFields').style.display = 'none';
+            document.getElementById('operatorFields').style.display = 'none';
+            document.getElementById('regUserType').value = ''; // Clear selection
+            document.getElementById('registrationForm').reset(); // Clear form fields
+        });
+
+        registeredUsersLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            navMenu.classList.remove('active');
+            closeAllModals();
+            userTypeModal.style.display = 'block';
+        });
+
+        aboutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            navMenu.classList.remove('active');
+            closeAllModals();
+            aboutModal.style.display = 'block';
+        });
+
+        // Close Buttons
+        closeRegister.addEventListener('click', closeAllModals);
+        closeUserType.addEventListener('click', closeAllModals);
+        closeDoctorConnect.addEventListener('click', closeAllModals);
+        closeDroneOperatorConnect.addEventListener('click', closeAllModals);
+        closeAbout.addEventListener('click', closeAllModals);
+
+        // Form Switch Links
+        // showRegisteredUsers.addEventListener('click', (e) => { // This was already present, but the new code uses 'showLogin'
+        //     e.preventDefault();
+        //     registerModal.style.display = 'none';
+        //     userTypeModal.style.display = 'block';
+        // });
+
+        // User Type Selection Buttons
+        iamDroneOperatorBtn.addEventListener('click', () => {
+            userTypeModal.style.display = 'none';
+            droneOperatorConnectModal.style.display = 'block';
+        });
+
+        iamDoctorBtn.addEventListener('click', () => {
+            userTypeModal.style.display = 'none';
+            doctorConnectModal.style.display = 'block';
+        });
+
+        // Doctor Connect Button Event Listener
+        connectAsDoctorBtn.addEventListener('click', () => {
+            const doctorName = doctorNameSelect.value;
+            const selectedDrone = droneToConnectSelect.value;
+
+            if (doctorName && selectedDrone) {
+                const connectionData = {
+                    role: 'doctor',
+                    doctorName: doctorName,
+                    droneName: selectedDrone
+                };
+                // Emit connection data to the server
+                socket.emit('updateConnection', connectionData);
+                alert(`Doctor ${doctorName} connected to Drone ${selectedDrone}!`);
+                closeAllModals();
+            } else {
+                alert('Please select your name and a drone to connect to.');
+            }
+        });
+
+        // Drone Operator Connect Button Event Listener
+        connectAsDroneOperatorBtn.addEventListener('click', () => {
+            const operatorName = droneOperatorNameSelect.value;
+            const selectedDoctor = doctorToConnectSelect.value;
+
+            if (operatorName && selectedDoctor) {
+                const connectionData = {
+                    role: 'droneOperator',
+                    operatorName: operatorName,
+                    doctorName: selectedDoctor
+                };
+                // Emit connection data to the server
+                socket.emit('updateConnection', connectionData);
+                alert(`Drone Operator ${operatorName} connected to Doctor ${selectedDoctor}!`);
+                closeAllModals();
+            } else {
+                alert('Please select your name and a doctor to connect to.');
+            }
+        });
+
+        // Reset Connection Button Event Listener
+        resetConnectionBtn.addEventListener('click', () => {
+            // Emit reset event to the server
+            socket.emit('resetConnection');
+            localStorage.removeItem('currentConnection');
+            resetServiceCards();
+            alert('Connection reset. You can now establish a new connection.');
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === registerModal || e.target === userTypeModal || 
+                e.target === doctorConnectModal || e.target === droneOperatorConnectModal || 
+                e.target === aboutModal) {
+                e.target.style.display = 'none';
+            }
+        });
+
+        // Registration Form Submission (Original)
+        // document.getElementById('registrationForm').addEventListener('submit', (e) => {
+        //     e.preventDefault();
+        //     alert('Registration successful! Please select your role to continue.');
+        //     registerModal.style.display = 'none';
+        //     userTypeModal.style.display = 'block';
+        // });
+
+        // Service Card Links
+        document.getElementById('droneSimulator').addEventListener('click', () => {
+            window.location.href = 'drone.html'; 
+        });
+
+        document.getElementById('doctorInterface').addEventListener('click', () => {
+            window.location.href = 'doctor.html';
+        });
+
+        // Periodically check connection status
+        setInterval(() => {
+            if (!socket.connected) {
+                socket.connect();
+            }
+        }, 5000);
+
+        // --- START OF NEW REGISTRATION CODE ---
+
+        // Initialize users from localStorage
+        let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+
+        // Save users to localStorage
+        function saveUsers() {
+            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+        }
+
+        // Registration form conditional fields
+        const regUserTypeSelect = document.getElementById('regUserType');
+        const doctorFields = document.getElementById('doctorFields');
+        const operatorFields = document.getElementById('operatorFields');
+
+        // Assuming a loginModal exists for switching, if not, this part needs adjustment
+        const loginModal = document.getElementById('loginModal'); // This element is not in the provided HTML, might need to be added or handled differently
+
+        // Event listener for switching to login from registration
+        if (showLogin) { // Check if showLogin element exists
+            showLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                registerModal.style.display = 'none';
+                if (loginModal) { // Only try to display if loginModal exists
+                    loginModal.style.display = 'block';
+                } else {
+                    console.warn("Login modal not found. Cannot switch to login form.");
+                    // Optionally, you could redirect to a login page or show an alert
+                }
+            });
+        }
+
+
+        // Conditional fields display based on user type selection (Registration)
+        regUserTypeSelect.addEventListener('change', () => {
+            if (regUserTypeSelect.value === 'doctor') {
+                doctorFields.style.display = 'block';
+                operatorFields.style.display = 'none';
+                // Make doctor fields required
+                document.getElementById('regSpecialization').setAttribute('required', 'required');
+                document.getElementById('regLicense').setAttribute('required', 'required');
+                document.getElementById('regClinic').setAttribute('required', 'required');
+                // Remove required from operator fields
+                document.getElementById('regCity').removeAttribute('required');
+                document.getElementById('regVillage').removeAttribute('required');
+                document.getElementById('regState').removeAttribute('required');
+                document.getElementById('regCountry').removeAttribute('required');
+            } else if (regUserTypeSelect.value === 'drone_operator') {
+                doctorFields.style.display = 'none';
+                operatorFields.style.display = 'block';
+                // Make operator fields required
+                document.getElementById('regCity').setAttribute('required', 'required');
+                document.getElementById('regVillage').setAttribute('required', 'required');
+                document.getElementById('regState').setAttribute('required', 'required');
+                document.getElementById('regCountry').setAttribute('required', 'required');
+                // Remove required from doctor fields
+                document.getElementById('regSpecialization').removeAttribute('required');
+                document.getElementById('regLicense').removeAttribute('required');
+                document.getElementById('regClinic').removeAttribute('required');
+            } else {
+                doctorFields.style.display = 'none';
+                operatorFields.style.display = 'none';
+                // Remove required from all conditional fields
+                document.getElementById('regSpecialization').removeAttribute('required');
+                document.getElementById('regLicense').removeAttribute('required');
+                document.getElementById('regClinic').removeAttribute('required');
+                document.getElementById('regCity').removeAttribute('required');
+                document.getElementById('regVillage').removeAttribute('required');
+                document.getElementById('regState').removeAttribute('required');
+                document.getElementById('regCountry').removeAttribute('required');
+            }
+        });
+
+        // Registration form submission (New)
+        document.getElementById('registrationForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const regName = document.getElementById('regName').value;
+            const regUserId = document.getElementById('regUserId').value;
+            const regEmail = document.getElementById('regEmail').value;
+            const regPhone = document.getElementById('regPhone').value;
+            const regUserType = document.getElementById('regUserType').value;
+            const regPassword = document.getElementById('regPassword').value;
+            const regConfirmPassword = document.getElementById('regConfirmPassword').value;
+            const regSpecialization = document.getElementById('regSpecialization').value; // Get selected specialization
+
+            // Validation
+            if (regPassword !== regConfirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+
+            // Check if User ID already exists
+            const userExists = registeredUsers.some(user => user.userId === regUserId);
+            if (userExists) {
+                alert('User ID already taken. Please choose a different one.');
+                return;
+            }
+
+            // Create new user object
+            const newUser = {
+                name: regName,
+                userId: regUserId,
+                email: regEmail,
+                phone: regPhone,
+                userType: regUserType,
+                password: regPassword,
+                skills: [],
+                workDetails: '',
+                metrics: { // Initialize metrics to 0
+                    assignedCases: 0,
+                    completedTasks: 0,
+                    responseTime: 0,
+                    successRate: 100 // Default success rate
+                }
+            };
+
+            // Add conditional fields based on user type
+            if (regUserType === 'doctor') {
+                newUser.specialization = regSpecialization; // Use selected specialization
+                newUser.license = document.getElementById('regLicense').value;
+                newUser.clinic = document.getElementById('regClinic').value;
+                newUser.metrics.onlineConsultations = 0;
+                newUser.metrics.emergencyResponses = 0;
+            } else if (regUserType === 'drone_operator') {
+                newUser.city = document.getElementById('regCity').value;
+                newUser.village = document.getElementById('regVillage').value;
+                newUser.state = document.getElementById('regState').value;
+                newUser.country = document.getElementById('regCountry').value;
+                // Drone operators don't have specific metrics like flight hours in this simplified dashboard
+                // newUser.metrics.flightHours = 0;
+                // newUser.metrics.successfulMissions = 0;
+            }
+
+            registeredUsers.push(newUser);
+            saveUsers();
+
+            alert(`Registration successful! Your User ID is: ${regUserId}. You can now login.`);
+            
+            registerModal.style.display = 'none';
+            // The original code had `loginModal.style.display = 'block';` here.
+            // Since `loginModal` is not defined in the provided HTML,
+            // I'm changing it to display `userTypeModal` as per the original flow after registration.
+            userTypeModal.style.display = 'block'; 
+            
+            // document.getElementById('loginUserId').value = regUserId; // This assumes a login form exists
+            // document.getElementById('loginPassword').value = ''; // This assumes a login form exists
+            document.getElementById('registrationForm').reset(); // Clear registration form fields
+        });
+        // --- END OF NEW REGISTRATION CODE ---
+    </script>
+</body>
+</html>
+

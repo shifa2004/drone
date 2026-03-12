@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Interface - IIIT Kurnool Ambulance Drone</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #e63946;
+            --secondary: #1d3557;
+            --accent: #a8dadc;
+            --light: #f1faee;
+            --dark: #0d1b2a;
+            --success: #2a9d8f;
+            --warning: #e9c46a;
+            --danger: #e76f51;
+            --hospital: #8ecae6;
+            --map-overlay: rgba(13, 27, 42, 0.85);
+            --iiit-blue: #1a3a5f;
+            --iiit-gold: #d4af37;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        header {
+            background: rgba(29, 53, 87, 0.85);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(168, 218, 220, 0.3);
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--hospital);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .logo-line-1{
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--iiit-gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .logo-line-2{
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+             margin: 3px 0;
+        }
+        .logo-line-3 {
+             font-size: 0.9rem;
+             color: var(--accent);
+             font-weight: 500;
+             letter-spacing: 0.5px;
+        }
+        .main-container {
+            display: flex;
+            flex: 1;
+            padding: 10px;
+            gap: 10px;
+            flex-wrap: wrap;
+            min-height: 0;
+        }
+
+        .map-section {
+            flex: 2;
+            min-width: 400px;
+            background: var(--map-overlay);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(168, 218, 220, 0.3);
+            min-height: 300px;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .video-section {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .video-call-container {
+            background: rgba(29, 53, 87, 0.85);
+            border-radius: 15px;
+            padding: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(168, 218, 220, 0.3);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            min-height: 300px;
+        }
+
+        .video-call-container h3 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.1rem;
+        }
+
+        #zego-video-container {
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .console-section {
+            background: rgba(29, 53, 87, 0.85);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(168, 218, 220, 0.3);
+            margin: 10px;
+            flex-shrink: 0;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(168, 218, 220, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .console-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .console-controls button {
+            background: rgba(168, 218, 220, 0.2);
+            color: var(--light);
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .console-content {
+            flex: 1;
+            background: rgba(13, 27, 42, 0.7);
+            border-radius: 8px;
+            padding: 10px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+        }
+
+        .log-timestamp {
+            color: var(--accent);
+            margin-right: 10px;
+            font-weight: 600;
+        }
+
+        .log-info {
+            color: var(--light);
+        }
+
+        .log-success {
+            color: var(--success);
+        }
+
+        .log-alert {
+            color: var(--danger);
+        }
+
+        /* Custom markers */
+        .ambulance-marker {
+            background: var(--primary);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 16px;
+            box-shadow: 0 0 10px rgba(230, 57, 70, 0.7);
+            border: 2px solid white;
+            z-index: 1000;
+        }
+
+        .drone-marker {
+            background: #28e4bb;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 14px;
+            box-shadow: 0 0 8px rgba(168, 218, 220, 0.8);
+            border: 2px solid white;
+            z-index: 1001;
+        }
+
+        .leaflet-div-icon {
+            background: transparent !important;
+            border: none !important;
+        }
+
+        /* Media Queries for responsiveness */
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .map-section, .video-section {
+                flex: none;
+                width: 95%;
+                min-width: unset;
+            }
+
+            .map-section {
+                height: 400px;
+            }
+
+            .console-section {
+                width: 95%;
+                margin: 10px auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-stethoscope logo-icon"></i>
+            <div class="logo-text">
+                <div class="logo-line-1">Indian Institute of Information Technology, Design and Manufacturing, Kurnool</div>
+                <div class="logo-line-1-sub">5G Labs, Trigun Robotics System Pvt Ltd</div>
+                <div class="logo-line-2" id="doctor-header-name">Doctor Interface</div>
+                <div class="logo-line-3">Design and Developed by Dr.K.Krishna Naik,Dr.M.Ravi Kumar and G.Kashifa Anjum </div>
+        </div>
+        </div>
+        <div class="header-controls">
+            <div class="simulation-time">
+                <i class="fas fa-clock time-icon"></i>
+                <span id="sim-time">00:00:00</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <section class="map-section">
+            <div id="map"></div>
+        </section>
+
+        <section class="video-section">
+            <div class="video-call-container">
+                <h3 id="video-call-title-text"><i class="fas fa-video"></i> Emergency Video Call</h3>
+                <div id="zego-video-container"></div>
+            </div>
+        </section>
+    </div>
+    
+    <section class="console-section">
+        <div class="console-header">
+            <div class="console-title">
+                <i class="fas fa-terminal"></i>
+                <span>SYSTEM CONSOLE</span>
+            </div>
+            <div class="console-controls">
+                <button id="clear-console">
+                    <i class="fas fa-trash"></i> Clear
+                </button>
+            </div>
+        </div>
+        <div class="console-content" id="console-content">
+            <div class="log-entry">
+                <span class="log-timestamp">00:00:00</span>
+                <span class="log-message log-info">Doctor interface initialized. Waiting for drone connection...</span>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
+    <script>
+        // Initialize variables
+        let map;
+        let ambulanceMarker, droneMarker, droneAmbulanceLine;
+        const KURNOOL_COORDS = [15.8281, 78.0373]; // Default center for Kurnool
+        let zp; // ZegoCloud instance
+        const socket = io('https://testfile6.onrender.com'); // Connect to the Socket.IO server
+
+        // Get DOM elements
+        const clearConsoleBtn = document.getElementById('clear-console');
+        const consoleContent = document.getElementById('console-content');
+        const simTime = document.getElementById('sim-time');
+        const doctorHeaderName = document.getElementById('doctor-header-name');
+        const videoCallTitleText = document.getElementById('video-call-title-text');
+
+        // Retrieve connection info from localStorage
+        const currentConnection = JSON.parse(localStorage.getItem('currentConnection'));
+        let doctorName = "Doctor";
+        let droneName = "Ambulance Drone";
+
+        if (currentConnection && currentConnection.role === 'doctor') {
+            doctorName = currentConnection.doctorName;
+            droneName = currentConnection.droneName;
+            doctorHeaderName.textContent = `${doctorName} Interface`;
+            videoCallTitleText.textContent = `Video Call with ${droneName}`;
+        } else if (currentConnection && currentConnection.role === 'droneOperator') {
+            // This case shouldn't happen if doctor.html is only for doctors,
+            // but good to handle defensively.
+            doctorName = currentConnection.doctorName;
+            droneName = currentConnection.operatorName;
+            doctorHeaderName.textContent = `${doctorName} Interface`;
+            videoCallTitleText.textContent = `Video Call with ${droneName}`;
+        } else {
+            doctorHeaderName.textContent = `Doctor Interface`;
+            videoCallTitleText.textContent = `Emergency Video Call`;
+        }
+
+        // --- Map Initialization ---
+        function initMap() {
+            map = L.map('map').setView(KURNOOL_COORDS, 14);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            ambulanceMarker = L.marker(KURNOOL_COORDS, {
+                icon: L.divIcon({
+                    className: 'ambulance-marker',
+                    html: '🚑',
+                    iconSize: [30, 30]
+                })
+            }).addTo(map);
+
+            droneMarker = L.marker(KURNOOL_COORDS, {
+                icon: L.divIcon({
+                    className: 'drone-marker',
+                    html: '✈',
+                    iconSize: [25, 25]
+                })
+            }).addTo(map);
+
+            // Initialize the dotted line between drone and ambulance
+            droneAmbulanceLine = L.polyline([KURNOOL_COORDS, KURNOOL_COORDS], {
+                color: '#a8dadc', // Accent color
+                weight: 3,
+                opacity: 0.7,
+                dashArray: '5, 10' // Dotted line
+            }).addTo(map);
+
+            addLogEntry('Map initialized. Waiting for GPS data from drone.', 'info');
+        }
+        
+
+        // --- Socket.IO for GPS Sync ---
+        socket.on('connect', () => {
+            addLogEntry('Connected to signaling server.', 'info');
+            socket.emit('join', '108'); // Doctor joins the '108' room
+            addLogEntry('Joined room: 108', 'info');
+        });
+
+        socket.on('droneData', (data) => {
+            let ambulanceCoords = KURNOOL_COORDS;
+            let droneCoords = KURNOOL_COORDS;
+
+            if (data.ambulance) {
+                ambulanceCoords = [data.ambulance.lat, data.ambulance.lng];
+                ambulanceMarker.setLatLng(ambulanceCoords);
+            }
+            if (data.drone) {
+                droneCoords = [data.drone.lat, data.drone.lng];
+                droneMarker.setLatLng(droneCoords);
+                map.setView(droneCoords, map.getZoom()); // Center map on drone
+            }
+
+            // Update the dotted line
+            if (droneAmbulanceLine) {
+                droneAmbulanceLine.setLatLngs([ambulanceCoords, droneCoords]);
+            }
+
+            addLogEntry(`GPS Update: Ambulance (${ambulanceCoords[0].toFixed(4)}, ${ambulanceCoords[1].toFixed(4)}), Drone (${droneCoords[0].toFixed(4)}, ${droneCoords[1].toFixed(4)})`, 'info');
+        });
+
+        // --- ZegoCloud Video Call Functionality ---
+        async function startCall() {
+            addLogEntry('Joining emergency video call...', 'info');
+
+            const roomID = '108_emergency'; // Same room ID as drone
+            const userID = 'doctor_' + Math.floor(Math.random() * 10000);
+            const userName = doctorName; // Use the retrieved doctor name
+            const appID = 1986706440;
+            const serverSecret = "c5c2b752e9cf64e6a1aa56e18ba883f4";
+            
+            const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
+                appID, 
+                serverSecret, 
+                roomID, 
+                userID, 
+                userName
+            );
+            
+            zp = ZegoUIKitPrebuilt.create(kitToken);
+            zp.joinRoom({
+                container: document.querySelector("#zego-video-container"),
+                scenario: {
+                    mode: ZegoUIKitPrebuilt.VideoConference,
+                },
+                turnOnMicrophoneWhenJoining: true,
+                turnOnCameraWhenJoining: true,
+                showMyCameraToggleButton: true,
+                showMyMicrophoneToggleButton: true,
+                showAudioVideoSettingsButton: true,
+                showScreenSharingButton: false,
+                showTextChat: true,
+                showUserList: true,
+                maxUsers: 2,
+                layout: "Auto",
+                showLayoutButton: false,
+            });
+            
+            zp.on('roomStateChanged', (state) => {
+                if (state === 'CONNECTED') {
+                    addLogEntry('Successfully connected to emergency video call.', 'success');
+                } else if (state === 'DISCONNECTED') {
+                    addLogEntry('Video call ended.', 'info');
+                }
+            });
+        }
+
+        // --- Console Logging ---
+        function addLogEntry(message, type) {
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+
+            const timestamp = document.createElement('span');
+            timestamp.className = 'log-timestamp';
+            timestamp.textContent = simTime.textContent;
+
+            const logMessage = document.createElement('span');
+            logMessage.className = `log-message log-${type}`;
+            logMessage.textContent = message;
+
+            logEntry.appendChild(timestamp);
+            logEntry.appendChild(logMessage);
+
+            consoleContent.appendChild(logEntry);
+            consoleContent.scrollTop = consoleContent.scrollHeight;
+        }
+
+        // --- Simulation Time Update ---
+        function updateSimulationTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            simTime.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // --- Event Listeners ---
+        clearConsoleBtn.addEventListener('click', () => {
+            consoleContent.innerHTML = '';
+            addLogEntry('Console cleared.', 'info');
+        });
+
+        // --- Initial Setup ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initMap();
+            setInterval(updateSimulationTime, 1000);
+            
+            // Auto-join call when page loads
+            setTimeout(() => {
+                startCall();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

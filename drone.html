@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ambulance Drone Simulator - IIITDM Kurnool</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+<link href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" rel="stylesheet"/>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #e63946;
+            --secondary: #1d3557;
+            --accent: #a8dadc;
+            --light: #f1faee;
+            --dark: #0d1b2a;
+            --success: #2a9d8f;
+            --warning: #e9c46a;
+            --danger: #e76f51;
+            --road: #4a4e69;
+            --lane: #9a8c98;
+            --hospital: #8ecae6;
+            --building: #6d6875;
+            --map-overlay: rgba(13, 27, 42, 0.85);
+            --iiit-blue: #1a3a5f;
+            --iiit-gold: #d4af37;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: var(--light);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            grid-template-rows: 100px 1fr 300px;
+            grid-template-areas:
+                "header header"
+                "sidebar main"
+                "console main";
+            height: 100vh;
+            gap: 10px;
+            padding: 10px;
+        }
+        
+        /* Header Styles */
+        header {
+            grid-area: header;
+            background: rgba(29, 53, 87, 0.85);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(168, 218, 220, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 10;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 10% 20%, rgba(230, 57, 70, 0.2) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 80%, rgba(168, 218, 220, 0.2) 0%, transparent 40%);
+            pointer-events: none;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            animation: pulse 2s infinite;
+        }
+        
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        
+        .logo-line-1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--iiit-gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .logo-line-2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            margin: 3px 0;
+        }
+        
+        .logo-line-3 {
+            font-size: 0.9rem;
+            color: var(--accent);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .header-controls {
+            margin-left: auto;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .simulation-time {
+            background: rgba(13, 27, 42, 0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--accent);
+        }
+        
+        .time-icon {
+            color: var(--accent);
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            grid-area: sidebar;
+            background: var(--map-overlay);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(168, 218, 220, 0.3);
+            z-index: 10;
+        }
+        
+        .control-panel {
+            background: rgba(29, 53, 87, 0.6);
+            border-radius: 12px;
+            padding: 15px;
+        }
+        
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: var(--accent);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .panel-icon {
+            font-size: 1.4rem;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--light);
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .slider {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--dark);
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        .value-display {
+            min-width: 40px;
+            text-align: center;
+            background: rgba(168, 218, 220, 0.2);
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .btn {
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: var(--dark);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .status-indicators {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: rgba(29, 53, 87, 0.6);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .status-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-value {
+            font-weight: 600;
+        }
+        
+        .status-good {
+            color: var(--success);
+        }
+        
+        .status-warning {
+            color: var(--warning);
+        }
+        
+        .status-critical {
+            color: var(--danger);
+            animation: blink 1s infinite;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            grid-area: main;
+            background: var(--map-overlay);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(168, 218, 220, 0.3);
+        }
+        
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .map-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(13, 27, 42, 0.3);
+            z-index: 2;
+            pointer-events: none;
+        }
+        
+        .map-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .map-btn {
+            background: rgba(29, 53, 87, 0.85);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            z-index: 20;
+        }
+        
+        .map-btn:hover {
+            background: rgba(168, 218, 220, 0.3);
+        }
+        
+        /* Video call container - Updated for movable/resizable and responsive */
+        .video-call-container {
+            position: fixed; /* Changed from absolute to fixed */
+            top: 50%; /* Center vertically */
+            left: 50%; /* Center horizontally */
+            transform: translate(-50%, -50%); /* Adjust for centering */
+            width: 480px; /* Default desktop width */
+            height: 340px; /* Default desktop height */
+            max-width: 90vw; /* Max width relative to viewport */
+            max-height: 90vh; /* Max height relative to viewport */
+            background-color: rgba(0, 0, 0, 0.85);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            z-index: 9999;
+            box-shadow: 0 0 15px rgba(0,0,0,0.6);
+            overflow: hidden; /* Changed to hidden for default, visible during resize */
+            color: white;
+            font-family: Arial, sans-serif;
+            /* resize: both; Removed native resize */
+            cursor: grab; /* Changed to grab for better UX */
+            display: flex;
+            flex-direction: column;
+            min-width: 300px;
+            min-height: 200px;
+        }
+
+        .video-call-header {
+            padding: 6px 10px;
+            background: var(--secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: grab; /* Changed to grab for better UX */
+            user-select: none;
+            touch-action: none; /* Prevent default touch actions like scrolling/zooming */
+        }
+        
+        .video-call-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .video-call-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: var(--success);
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            background: red;
+            border-radius: 50%;
+        }
+        
+        .video-call-content {
+            position: relative;
+            flex-grow: 1;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        #zego-video-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Custom Resize Handle */
+        .video-call-resize-handle {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 20px; /* Size of the handle */
+            height: 20px; /* Size of the handle */
+            background: var(--accent); /* Color of the handle */
+            border-top-left-radius: 5px; /* Rounded corner for visual appeal */
+            cursor: nwse-resize; /* Resize cursor */
+            z-index: 10000; /* Ensure it's above other elements */
+            touch-action: none; /* Prevent default touch actions */
+        }
+        
+        /* GPS Indicator */
+        .gps-indicator {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(29, 53, 87, 0.7);
+            padding: 10px 15px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid var(--accent);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            color: var(--light);
+        }
+        
+        .gps-indicator.active {
+            border-color: var(--success);
+        }
+        
+        .gps-indicator .gps-icon {
+            color: var(--warning);
+        }
+        
+        .gps-indicator.active .gps-icon {
+            color: var(--success);
+            animation: pulse 2s infinite;
+        }
+        
+        /* Animations */
+        @keyframes siren {
+            0% { background: blue; box-shadow: 0 0 10px blue; }
+            50% { background: red; box-shadow: 0 0 10px red; }
+            100% { background: blue; box-shadow: 0 0 10px blue; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        /* Custom markers */
+        .ambulance-marker {
+            background: var(--primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 0 15px rgba(230, 57, 70, 0.7);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid white;
+            z-index: 1000;
+        }
+        
+        .siren {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            background: blue;
+            border-radius: 50%;
+            animation: siren 1s infinite;
+            box-shadow: 0 0 5px blue;
+        }
+        
+        .hospital-marker {
+            background: var(--hospital);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 0 15px rgba(142, 202, 230, 0.7);
+            border: 2px solid white;
+            z-index: 1000;
+        }
+        
+        .drone-marker {
+            background: #28e4bb;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            box-shadow: 0 0 10px rgba(168, 218, 220, 0.8);
+            border: 2px solid white;
+            z-index: 1001;
+            
+        }
+        
+        .drone-icon {
+            font-size: 20px;
+            color: rgb(212, 40, 40);
+        }
+        
+        .leaflet-div-icon {
+            background: transparent !important;
+            border: none !important;
+        }
+        
+        .drone-guide-line {
+            position: absolute;
+            background: rgba(0, 255, 0, 0.5);
+            border: 2px dashed #00ff00;
+            z-index: 25;
+            pointer-events: none;
+        }
+        
+        /* Map legend */
+        .map-legend {
+            position: absolute;
+            bottom: 240px;
+            right: 20px;
+            background: rgba(29, 53, 87, 0.85);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 1000;
+            color: var(--light);
+            border: 1px solid var(--accent);
+            max-width: 200px;
+        }
+        
+        .legend-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid white;
+        }
+        
+        .legend-ambulance { background: var(--primary); }
+        .legend-hospital { background: var(--hospital); }
+        .legend-drone { background: #28e4bb; }
+        .legend-route { background: var(--success); }
+        
+        /* Drone guidance effect */
+        .drone-guidance {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: rgba(168, 218, 220, 0.8);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1002;
+            pointer-events: none;
+            box-shadow: 0 0 15px rgba(168, 218, 220, 0.7);
+        }
+        
+        .drone-guidance i {
+            color: var(--secondary);
+            font-size: 16px;
+        }
+        
+        /* Developer info */
+        .developer-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(29, 53, 87, 0.85);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 1000;
+            color: var(--light);
+            border: 1px solid var(--accent);
+            max-width: 300px;
+            font-size: 0.9rem;
+        }
+        
+        .developer-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .developer-names {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .iiit-logo {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            font-size: 2.5rem;
+            color: var(--iiit-gold);
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        
+        /* Routing control styling */
+        .leaflet-routing-container {
+            background: rgba(29, 53, 87, 0.9);
+            color: var(--light);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            padding: 10px;
+            max-width: 300px;
+        }
+        
+        .leaflet-routing-alt {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .leaflet-routing-alt h3 {
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+        
+        .leaflet-routing-alt table {
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        
+        .leaflet-routing-alt tr:hover {
+            background: rgba(168, 218, 220, 0.2);
+        }
+        
+        .leaflet-routing-geocoders input {
+            background: rgba(13, 27, 42, 0.7);
+            color: var(--light);
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            padding: 5px;
+            margin-bottom: 5px;
+            width: 100%;
+        }
+        
+        .leaflet-routing-geocoders button {
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        
+        .console {
+            grid-area: console;
+            background: rgba(29, 53, 87, 0.85);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(168, 218, 220, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(168, 218, 220, 0.3);
+            margin-bottom: 10px;
+        }
+        
+        .console-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .console-controls button {
+            background: rgba(168, 218, 220, 0.2);
+            color: var(--light);
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .console-content {
+            flex: 1;
+            background: rgba(13, 27, 42, 0.7);
+            border-radius: 8px;
+            padding: 10px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+        }
+        
+        .log-timestamp {
+            color: var(--accent);
+            margin-right: 10px;
+            font-weight: 600;
+        }
+        
+        .log-info {
+            color: var(--light);
+        }
+        
+        .log-success {
+            color: var(--success);
+        }
+        
+        .log-alert {
+            color: var(--danger);
+        }
+        
+        .system-overview {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            gap: 10px;
+        }
+        
+        .metric-card {
+            flex: 1;
+            background: rgba(13, 27, 42, 0.7);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(168, 218, 220, 0.3);
+        }
+        
+        .metric-card i {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--light);
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--accent);
+        }
+        
+        /* Hospital info panel */
+        .hospital-info {
+            position: absolute;
+            top: 120px;
+            right: 20px;
+            background: rgba(29, 53, 87, 0.85);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 1000;
+            color: var(--light);
+            border: 1px solid var(--accent);
+            max-width: 300px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .hospital-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 250px 1fr;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "header"
+                    "main"
+                    "sidebar"
+                    "console";
+                grid-template-rows: auto 1fr auto auto;
+            }
+            
+            .sidebar {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .control-panel {
+                flex: 1;
+                min-width: 250px;
+            }
+            
+            /* Adjust video call container for mobile */
+            .video-call-container {
+                width: 70vw; /* Smaller default width */
+                height: 50vh; /* Smaller default height */
+                min-width: unset; /* Remove min-width constraint */
+                min-height: unset; /* Remove min-height constraint */
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%); /* Ensure it stays centered */
+            }
+        }
+
+        /* Specific adjustments for very small screens (mobile portrait) */
+        @media (max-width: 600px) {
+            .video-call-container {
+                width: 60vw; /* Even smaller default width */
+                height: 30vh; /* Even smaller default height */
+                min-width: 200px; /* Ensure it's not too small to be unusable */
+                min-height: 150px;
+            }
+            .video-call-header {
+                font-size: 0.8rem;
+                padding: 4px 8px;
+            }
+            .video-call-title {
+                font-size: 0.8rem;
+            }
+            .video-call-status {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<header>
+<div class="logo">
+<i class="fas fa-ambulance logo-icon"></i>
+<div class="logo-text">
+<div class="logo-line-1">Indian Institute of Information Technology, Design and Manufacturing, Kurnool</div>
+<div class="logo-line-1-sub">5G Labs, Trigun Robotics System Pvt Ltd</div>
+<div class="logo-line-2">AMBULANCE PATROL DRONE</div>
+<div class="logo-line-3">Design and Developed by Dr.K.Krishna Naik,Dr.M.Ravi Kumar and G.Kashifa Anjum </div>
+</div>
+</div>
+<div class="header-controls">
+<div class="simulation-time">
+<i class="fas fa-clock time-icon"></i>
+<span id="sim-time">12:45:30</span>
+</div>
+<!-- Emergency Call Button -->
+<button class="btn btn-danger" id="trigger-emergency">
+<i class="fas fa-phone-volume"></i> 108 Emergency Call
+</button>
+<!-- Start Simulation Button -->
+<button class="btn btn-success" id="start-sim">
+<i class="fas fa-play"></i> Start Simulation
+</button>
+<!-- Video Call Button -->
+<button class="btn btn-primary" id="start-video-call">
+<i class="fas fa-video"></i> Video Call Doctor
+</button>
+</div>
+</header>
+<aside class="sidebar">
+<div class="control-panel">
+<div class="panel-title">
+<i class="fas fa-sliders-h panel-icon"></i>
+<span>SIMULATION CONTROLS</span>
+</div>
+<div class="control-group">
+<label class="control-label">Traffic Density</label>
+<div class="slider-container">
+<input class="slider" id="traffic-density" max="100" min="1" type="range" value="65"/>
+<div class="value-display">65%</div>
+</div>
+</div>
+<div class="control-group">
+<label class="control-label">Drone Volume</label>
+<div class="slider-container">
+<input class="slider" id="drone-volume" max="100" min="1" type="range" value="70"/>
+<div class="value-display">70%</div>
+</div>
+</div>
+<div class="control-group">
+<label class="control-label">Ambulance Speed</label>
+<div class="slider-container">
+<input class="slider" id="ambulance-speed" max="100" min="1" type="range" value="40"/>
+<div class="value-display">40 km/h</div>
+</div>
+</div>
+<div class="btn-group">
+<button class="btn btn-primary" id="deploy-drone">
+<i class="fas fa-paper-plane"></i> Deploy Drone
+</button>
+<button class="btn btn-warning" id="emergency-mode">
+<i class="fas fa-bolt"></i> Emergency Mode
+</button>
+</div>
+</div>
+<div class="control-panel">
+<div class="panel-title">
+<i class="fas fa-heartbeat panel-icon"></i>
+<span>SYSTEM STATUS</span>
+</div>
+<div class="status-indicators">
+<div class="status-item">
+<div class="status-label">
+<i class="fas fa-ambulance"></i>
+<span>Ambulance Status</span>
+</div>
+<div class="status-value status-good">Operational</div>
+</div>
+<div class="status-item">
+<div class="status-label">
+<i class="fas fa-drone"></i>
+<span>Drone Status</span>
+</div>
+<div class="status-value status-warning">Operational</div>
+</div>
+<div class="status-item">
+<div class="status-label">
+<i class="fas fa-battery-three-quarters"></i>
+<span>Drone Battery</span>
+</div>
+<div class="status-value status-good">92%</div>
+</div>
+<div class="status-item">
+<div class="status-label">
+<i class="fas fa-traffic-light"></i>
+<span>Traffic Conditions</span>
+</div>
+<div class="status-value status-critical">Heavy Congestion</div>
+</div>
+</div>
+</div>
+</aside>
+<main class="main-content">
+<div class="iiit-logo">
+<i class="fas fa-university"></i>
+</div>
+<div class="gps-indicator" id="gps-indicator">
+<i class="fas fa-satellite gps-icon"></i>
+<span>Acquiring GPS...</span>
+</div>
+<div id="map"></div>
+<div class="map-overlay"></div>
+<div class="map-controls">
+<button class="map-btn" id="clear-path">
+<i class="fas fa-trash"></i> Clear Path
+</button>
+<button class="map-btn" id="get-location">
+<i class="fas fa-location-arrow"></i> Get Current Location
+</button>
+</div>
+<div class="map-legend">
+<div class="legend-title"><i class="fas fa-map"></i> Map Legend</div>
+<div class="legend-item">
+<div class="legend-color legend-ambulance"></div>
+<div>Ambulance</div>
+</div>
+<div class="legend-item">
+<div class="legend-color legend-hospital"></div>
+<div>Hospital</div>
+</div>
+<div class="legend-item">
+<div class="legend-color legend-drone"></div>
+<div>Drone</div>
+</div>
+<div class="legend-item">
+<div class="legend-color legend-route"></div>
+<div>Road Route</div>
+</div>
+</div>
+
+<!-- Video Call Container -->
+<div class="video-call-container" id="video-call-container" style="display: none;">
+    <div class="video-call-header">
+        <div class="video-call-title">
+            <i class="fas fa-video"></i>
+            <span id="video-call-header-text">Doctor Video Call</span>
+        </div>
+        <div class="video-call-status">
+            <span class="status-indicator" id="call-status-indicator" style="background-color: red;"></span>
+            <span id="call-status-text">Disconnected</span>
+        </div>
+    </div>
+    <div class="video-call-content">
+        <div id="zego-video-container"></div>
+    </div>
+    <div class="video-call-resize-handle"></div> <!-- New resize handle -->
+</div>
+
+<div class="developer-info">
+<div class="developer-title">
+<i class="fas fa-code"></i>
+<span>Project Developers</span>
+</div>
+<div class="developer-names">
+<div>Dr K. Krishna Naik (Faculty Lead)</div>
+<div>G. Kashifa Anjum   (Lead Developer)</div>
+</div>
+</div>
+<div class="hospital-info" id="hospital-info">
+<div class="hospital-title">
+<i class="fas fa-hospital"></i>
+<span>Nearest Hospital</span>
+</div>
+<div id="selected-hospital">Not selected yet</div>
+<div id="hospital-distance">Distance: - km</div>
+</div>
+<div id="doctor-monitoring" style="
+    position: absolute;
+    top: 160px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(29,53,87,0.95);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid #a8dadc;
+    z-index: 2000;
+    width: 400px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    text-align: center;
+    display: none; /* Hidden by default */
+">
+<h3 style="color:#e9c46a; margin-bottom: 10px;">
+<i class="fas fa-user-md"></i> Doctor Monitoring Patient
+</h3>
+<p><strong>Status:</strong> Patient Conscious &amp; Stable</p>
+<p><strong>Instruction:</strong> Route to nearest equipped hospital immediately!</p>
+<button class="btn btn-success" id="doctor-close-panel">
+<i class="fas fa-check-circle"></i> Acknowledge
+</button>
+</div>
+</main>
+<section class="console">
+<div class="console-header">
+<div class="console-title">
+<i class="fas fa-terminal"></i>
+<span>SYSTEM CONSOLE</span>
+</div>
+<div class="console-controls">
+<button id="clear-console">
+<i class="fas fa-trash"></i> Clear
+</button>
+</div>
+</div>
+<div class="console-content" id="console-content">
+<div class="log-entry">
+<span class="log-timestamp">12:45:05</span>
+<span class="log-message log-info">System initialized. Welcome to IIITDM Kurnool Ambulance Drone Simulator.</span>
+</div>
+<div class="log-entry">
+<span class="log-timestamp">12:45:10</span>
+<span class="log-message log-info">Map centered on Kurnool city, Andhra Pradesh.</span>
+</div>
+<div class="log-entry">
+<span class="log-timestamp">12:45:12</span>
+<span class="log-message log-info">Click 'Get Current Location' to start with your GPS position.</span>
+</div>
+</div>
+<div class="system-overview">
+<div class="metric-card">
+<i class="fas fa-clock"></i>
+<div class="metric-value" id="time-saved">0:00</div>
+<div class="metric-label">Time Saved (min:sec)</div>
+</div>
+<div class="metric-card">
+<i class="fas fa-car"></i>
+<div class="metric-value" id="vehicles-cleared">0</div>
+<div class="metric-label">Vehicles Cleared</div>
+</div>
+<div class="metric-card">
+<i class="fas fa-road"></i>
+<div class="metric-value" id="distance-covered">0.0</div>
+<div class="metric-label">Distance Covered (km)</div>
+</div>
+</div>
+</section>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
+<script>
+    // Initialize variables
+    let map;
+    let ambulanceMarker, hospitalMarker, droneMarker;
+    let isSimulationActive = false;
+    let currentPathIndex = 0;
+    let routeWaypoints = [];
+    let droneGuidance = null;
+    let guideLine = null;
+    let routingControl = null;
+    let ambulanceInterval;
+    const PI_CAMERA_URL = "http://10.22.129.164:5000/normal"; // Updated Pi Camera URL
+    const socket = io('https://testfile6.onrender.com'); // Connect to the Socket.IO server
+    
+    // Kurnool city coordinates
+    const KURNOOL_COORDS = [15.8281, 78.0373];
+    
+    // Define hospitals in Kurnool with provided coordinates
+    const HOSPITALS = [
+        { name: "KIMS Hospital", coords: [15.8132, 78.0570], type: "hospital" },
+        { name: "OMNI Hospitals", coords: [15.82346, 78.04138], type: "hospital" },
+        { name: "Government General Hospital", coords: [15.8203, 78.0367], type: "hospital" },
+        { name: "Vijaya Hospital", coords: [15.8320, 78.0402], type: "hospital" },
+        { name: "Arunodhaya Hospital", coords: [15.8226, 78.0381], type: "hospital" },
+        { name: "Shiva Hospital", coords: [15.8284, 78.0426], type: "hospital" },
+        { name: "Rama Hospitals", coords: [15.8220, 78.0409], type: "hospital" },
+        { name: "Sanjeevani Multispeciality Hospital", coords: [15.8314, 78.0390], type: "hospital" },
+        { name: "Hope Hospitals", coords: [15.8253, 78.0441], type: "hospital" },
+        { name: "Care Hospital", coords: [15.8178, 78.0446], type: "hospital" },
+        { name: "Sree Ram Hospital", coords: [15.8307, 78.0411], type: "hospital" },
+        { name: "Uday Hospital", coords: [15.8210, 78.0350], type: "hospital" },
+        { name: "Aarogya Hospital", coords: [15.8250, 78.0376], type: "hospital" },
+        { name: "Bhadra Hospital", coords: [15.8174, 78.0425], type: "hospital" },
+        { name: "Sri Sai Super Speciality Hospital", coords: [15.8289, 78.0455], type: "hospital" }  
+    ];
+
+    // Initialize the application
+    function initializeApp() {
+        // Get DOM elements
+        const consoleContent = document.getElementById('console-content');
+        const simTime = document.getElementById('sim-time');
+        const gpsIndicator = document.getElementById('gps-indicator');
+        const clearPathBtn = document.getElementById('clear-path');
+        const getLocationBtn = document.getElementById('get-location');
+        const startSimBtn = document.getElementById('start-sim');
+        const deployDroneBtn = document.getElementById('deploy-drone');
+        const emergencyModeBtn = document.getElementById('emergency-mode');
+        const clearConsoleBtn = document.getElementById('clear-console');
+        const hospitalInfo = document.getElementById('hospital-info');
+        const selectedHospital = document.getElementById('selected-hospital');
+        const hospitalDistance = document.getElementById('hospital-distance');
+        const startVideoCallBtn = document.getElementById('start-video-call');
+        const videoCallContainer = document.getElementById('video-call-container');
+        const callStatusIndicator = document.getElementById('call-status-indicator');
+        const callStatusText = document.getElementById('call-status-text');
+        const videoCallHeaderText = document.getElementById('video-call-header-text'); // New element
+        const videoCallResizeHandle = document.querySelector('.video-call-resize-handle'); // New resize handle element
+
+        // Retrieve connection info from localStorage
+        const currentConnection = JSON.parse(localStorage.getItem('currentConnection'));
+        let droneOperatorName = "Ambulance Drone";
+        let doctorName = "Doctor";
+
+        if (currentConnection && currentConnection.role === 'droneOperator') {
+            droneOperatorName = currentConnection.operatorName;
+            doctorName = currentConnection.doctorName;
+            videoCallHeaderText.textContent = `Video Call with ${doctorName}`;
+        } else if (currentConnection && currentConnection.role === 'doctor') {
+            // This case shouldn't happen if drone.html is only for drone operators,
+            // but good to handle defensively.
+            droneOperatorName = currentConnection.droneName;
+            doctorName = currentConnection.doctorName;
+            videoCallHeaderText.textContent = `Video Call with ${doctorName}`;
+        } else {
+            videoCallHeaderText.textContent = `Video Call with Doctor`;
+        }
+        
+        // Add hospital markers to map
+        HOSPITALS.forEach(hospital => {
+            const marker = L.marker(hospital.coords, {
+                icon: L.divIcon({
+                    className: 'custom-icon',
+                    html: '<i class="fas fa-hospital" style="font-size: 24px; color: var(--hospital);"></i>',
+                    iconSize: [30, 30]
+                })
+            }).addTo(map);
+            
+            marker.bindPopup(`<strong>${hospital.name}</strong>`);
+        });
+        
+        // Get current location when button clicked
+        getLocationBtn.addEventListener('click', function() {
+            getCurrentLocation();
+        });
+        
+        // Clear the current path
+        function clearPath() {
+            if (ambulanceMarker) map.removeLayer(ambulanceMarker);
+            if (hospitalMarker) map.removeLayer(hospitalMarker);
+            if (droneMarker) map.removeLayer(droneMarker);
+            if (guideLine) map.removeLayer(guideLine);
+            if (droneGuidance) map.removeLayer(droneGuidance);
+            if (routingControl) map.removeControl(routingControl);
+            if (ambulanceInterval) clearInterval(ambulanceInterval);
+            routeWaypoints = [];
+            guideLine = null;
+            droneGuidance = null;
+            currentPathIndex = 0;
+            startSimBtn.disabled = true;
+            hospitalInfo.style.display = 'none';
+            addLogEntry('Path cleared. All markers removed.', 'info');
+        }
+        
+        clearPathBtn.addEventListener('click', clearPath);
+        
+        // Get current location using browser geolocation
+        function getCurrentLocation() {
+            addLogEntry('Requesting current location...', 'info');
+            gpsIndicator.innerHTML = '<i class="fas fa-satellite gps-icon"></i> Acquiring GPS...';
+            gpsIndicator.classList.remove('active');
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        // Update GPS indicator
+                        gpsIndicator.innerHTML = `<i class="fas fa-satellite gps-icon"></i> GPS: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                        gpsIndicator.classList.add('active');
+                        
+                        // Center map on location
+                        map.setView([lat, lng], 16);
+                        
+                        // Find nearest hospital
+                        const nearestHospital = findNearestHospital(lat, lng);
+                        
+                        // Create route
+                        createRoadRoute([lat, lng], nearestHospital.coords);
+                        
+                        // Update hospital info
+                        selectedHospital.textContent = nearestHospital.name;
+                        const distance = calculateDistance(lat, lng, nearestHospital.coords[0], nearestHospital.coords[1]).toFixed(1);
+                        hospitalDistance.textContent = `Distance: ${distance} km`;
+                        hospitalInfo.style.display = 'block';
+                        
+                        addLogEntry(`Current location acquired: ${lat.toFixed(6)}, ${lng.toFixed(6)}`, 'success');
+                        addLogEntry(`Nearest hospital: ${nearestHospital.name} (${distance} km)`, 'info');
+                        
+                        startSimBtn.disabled = false;
+
+                        // Emit GPS data to server for doctor.html
+                        socket.emit('updateDroneData', {
+                            ambulance: { lat: lat, lng: lng },
+                            drone: { lat: lat, lng: lng } // Drone starts at ambulance location
+                        });
+                    },
+                    error => {
+                        let errorMsg = 'Unable to retrieve your location. ';
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMsg += "Permission denied. Please enable location services.";
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMsg += "Location information is unavailable.";
+                                break;
+                            case error.TIMEOUT:
+                                errorMsg += "The request to get user location timed out.";
+                                break;
+                            default:
+                                errorMsg += "An unknown error occurred.";
+                                break;
+                        }
+                        
+                        gpsIndicator.innerHTML = '<i class="fas fa-satellite gps-icon"></i> GPS Error';
+                        gpsIndicator.classList.remove('active');
+                        
+                        addLogEntry(errorMsg, 'alert');
+                    }
+                );
+            } else {
+                gpsIndicator.innerHTML = '<i class="fas fa-satellite gps-icon"></i> GPS Not Supported';
+                addLogEntry("Geolocation is not supported by this browser.", 'alert');
+            }
+        }
+        
+        // Create road route using OSRM
+        function createRoadRoute(start, end) {
+            // Clear any existing route
+            if (routingControl) {
+                map.removeControl(routingControl);
+            }
+            
+            // Create ambulance marker
+            if (ambulanceMarker) map.removeLayer(ambulanceMarker);
+            ambulanceMarker = L.marker(start, {
+                icon: L.divIcon({
+                    className: 'ambulance-marker',
+                    html: '<div>🚑<div class="siren"></div></div>',
+                    iconSize: [40, 40]
+                })
+            }).addTo(map);
+            
+            // Create hospital marker
+            if (hospitalMarker) map.removeLayer(hospitalMarker);
+            hospitalMarker = L.marker(end, {
+                icon: L.divIcon({
+                    className: 'hospital-marker',
+                    html: '🏥',
+                    iconSize: [50, 50]
+                })
+            }).addTo(map);
+            
+            // Create routing control
+            routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(start[0], start[1]),
+                    L.latLng(end[0], end[1])
+                ],
+                routeWhileDragging: false,
+                showAlternatives: false,
+                lineOptions: {
+                    styles: [{color: '#2a9d8f', weight: 6, opacity: 0.8}]
+                },
+                createMarker: function() { return null; }
+            }).addTo(map);
+            
+            // When route is found
+            routingControl.on('routesfound', function(e) {
+                const routes = e.routes;
+                if (routes && routes.length > 0) {
+                    const route = routes[0];
+                    routeWaypoints = route.coordinates;
+                    
+                    // Calculate distance
+                    const distance = (route.summary.totalDistance / 1000).toFixed(1);
+                    document.getElementById('distance-covered').textContent = distance;
+                    
+                    addLogEntry(`Road route calculated: ${distance} km`, 'success');
+                }
+            });
+            
+            // Create drone marker
+            droneMarker = L.marker(start, {
+                icon: L.divIcon({
+                    className: 'drone-marker',
+                    html: '<div class="drone-icon">✈</div>',
+                    iconSize: [30, 30]
+                })
+            });
+            
+            // Create drone guidance effect
+            droneGuidance = L.marker(start, {
+                icon: L.divIcon({
+                    className: 'drone-guidance',
+                    html: '<i class="fas fa-location-arrow"></i>',
+                    iconSize: [30, 30]
+                })
+            });
+        }
+        
+        // Find nearest hospital
+        function findNearestHospital(lat, lng) {
+            let nearest = null;
+            let minDistance = Infinity;
+            
+            HOSPITALS.forEach(hospital => {
+                const distance = calculateDistance(lat, lng, hospital.coords[0], hospital.coords[1]);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearest = hospital;
+                }
+            });
+            
+            return nearest;
+        }
+        
+        // Calculate distance between two points (Haversine formula)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Earth radius in km
+            const dLat = deg2rad(lat2 - lat1);
+            const dLon = deg2rad(lon2 - lon1);
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+            return R * c;
+        }
+        
+        function deg2rad(deg) {
+            return deg * (Math.PI/180);
+        }
+        
+        // Play voice alert
+        function playVoiceAlert() {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(
+                    "Emergency! Ambulance approaching! Please move aside!"
+                );
+                utterance.rate = 1.2;
+                utterance.pitch = 1.1;
+                utterance.volume = 1;
+                speechSynthesis.speak(utterance);
+            }
+        }
+        
+        // Create drone guide line
+        function createGuideLine(from, to) {
+            // Remove any existing guide line
+            if (guideLine) map.removeLayer(guideLine);
+            
+            // Create new guide line
+            guideLine = L.polyline([from, to], {
+                color: '#00ff00',
+                weight: 3,
+                dashArray: '10, 10',
+                opacity: 0.7
+            }).addTo(map);
+        }
+        
+        // Smooth movement for markers
+        function moveMarkerSmoothly(marker, targetPos, duration, callback) {
+            const startPos = marker.getLatLng();
+            const startTime = Date.now();
+            const endTime = startTime + duration;
+            
+            function animate() {
+                const now = Date.now();
+                const progress = Math.min(1, (now - startTime) / duration);
+                
+                const lat = startPos.lat + (targetPos.lat - startPos.lat) * progress;
+                const lng = startPos.lng + (targetPos.lng - startPos.lng) * progress;
+                
+                marker.setLatLng([lat, lng]);
+                
+                // Update guide line if drone is moving
+                if (marker === droneMarker && ambulanceMarker) {
+                    createGuideLine(ambulanceMarker.getLatLng(), [lat, lng]);
+                }
+
+                // Emit updated GPS data
+                socket.emit('updateDroneData', {
+                    ambulance: ambulanceMarker.getLatLng(),
+                    drone: droneMarker.getLatLng()
+                });
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    if (callback) callback();
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // Deploy drone animation
+        function deployDrone() {
+            if (!routeWaypoints.length) {
+                addLogEntry('Error: No route defined for drone to follow', 'alert');
+                return;
+            }
+            
+            // Show drone and guidance
+            droneMarker.addTo(map);
+            droneGuidance.addTo(map);
+            droneMarker.setLatLng(ambulanceMarker.getLatLng());
+            droneGuidance.setLatLng(ambulanceMarker.getLatLng());
+            
+            // Add log entry
+            addLogEntry('Drone deployed. Moving ahead to clear traffic path...', 'info');
+            
+            // Reset path index
+            currentPathIndex = 0;
+            
+            // Start drone movement
+            moveDroneAlongPath();
+            
+            // Start ambulance movement to follow every point
+            startAmbulanceMovement();
+        }
+        
+        // Move drone along the path
+        function moveDroneAlongPath() {
+            if (currentPathIndex >= routeWaypoints.length) {
+                // Drone reached the end
+                setTimeout(() => {
+                    addLogEntry('Drone completed path clearance. Returning to ambulance.', 'success');
+                    returnDrone();
+                }, 2000);
+                return;
+            }
+            
+            // Move drone to next point
+            const nextPoint = routeWaypoints[currentPathIndex];
+            moveMarkerSmoothly(droneMarker, nextPoint, 100, () => {
+                // Move guidance to the same point
+                droneGuidance.setLatLng(nextPoint);
+                
+                // Create guide line from ambulance to drone
+                createGuideLine(ambulanceMarker.getLatLng(), nextPoint);
+                
+                // Simulate traffic clearance periodically
+                if (currentPathIndex % 20 === 0) {
+                    setTimeout(() => {
+                        // Play voice alert
+                        playVoiceAlert();
+                        
+                        // Update metrics
+                        const vehiclesCleared = Math.floor(Math.random() * 5) + 1;
+                        const currentCleared = parseInt(document.getElementById('vehicles-cleared').textContent);
+                        document.getElementById('vehicles-cleared').textContent = currentCleared + vehiclesCleared;
+                        
+                        addLogEntry(`Cleared ${vehiclesCleared} vehicles along the route`, 'success');
+                    }, 100);
+                }
+                
+                // Move to next point
+                currentPathIndex++;
+                moveDroneAlongPath();
+            });
+        }
+        
+        // Start ambulance movement to follow the route
+        function startAmbulanceMovement() {
+            let ambulanceIndex = 0;
+            const ambulanceSpeed = parseInt(document.getElementById('ambulance-speed').value);
+            
+            // Clear any existing interval
+            if (ambulanceInterval) clearInterval(ambulanceInterval);
+            
+            // Set ambulance to follow the drone at a distance
+            ambulanceInterval = setInterval(() => {
+                if (ambulanceIndex < currentPathIndex - 5 && ambulanceIndex < routeWaypoints.length) {
+                    const targetPoint = routeWaypoints[ambulanceIndex];
+                    ambulanceMarker.setLatLng(targetPoint);
+                    
+                    // Update time saved metric
+                    const timeSaved = Math.floor(ambulanceIndex / 10);
+                    document.getElementById('time-saved').textContent = `0:${timeSaved.toString().padStart(2, '0')}`;
+                    
+                    ambulanceIndex++;
+                }
+                
+                // Stop when ambulance reaches the end
+                if (ambulanceIndex >= routeWaypoints.length) {
+                    clearInterval(ambulanceInterval);
+                }
+            }, 200 - (ambulanceSpeed));
+        }
+        
+        // Return drone to ambulance
+        function returnDrone() {
+            // Animate drone return
+            const ambulancePos = ambulanceMarker.getLatLng();
+            moveMarkerSmoothly(droneMarker, ambulancePos, 3000, () => {
+                map.removeLayer(droneMarker);
+                map.removeLayer(droneGuidance);
+                addLogEntry('Drone returned and docked. Mission successful!', 'success');
+                
+                // Remove guide line
+                if (guideLine) {
+                    map.removeLayer(guideLine);
+                    guideLine = null;
+                }
+            });
+        }
+        
+        // Start the simulation
+        function startSimulation() {
+            if (!routeWaypoints.length) {
+                addLogEntry('Error: Please define a route before starting simulation', 'alert');
+                return;
+            }
+            
+            isSimulationActive = true;
+            startSimBtn.disabled = true;
+            deployDroneBtn.disabled = false;
+            emergencyModeBtn.disabled = false;
+            addLogEntry('Simulation started. Ready to deploy drone.', 'info');
+        }
+        
+        // Add log entry to console
+        function addLogEntry(message, type) {
+            const consoleContent = document.getElementById('console-content');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            
+            const timestamp = document.createElement('span');
+            timestamp.className = 'log-timestamp';
+            timestamp.textContent = document.getElementById('sim-time').textContent;
+            
+            const logMessage = document.createElement('span');
+            logMessage.className = `log-message log-${type}`;
+            logMessage.textContent = message;
+            
+            logEntry.appendChild(timestamp);
+            logEntry.appendChild(logMessage);
+            
+            consoleContent.appendChild(logEntry);
+            consoleContent.scrollTop = consoleContent.scrollHeight;
+        }
+        
+        // Update simulation time
+        function updateSimulationTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            
+            document.getElementById('sim-time').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+        
+        // Set up event listeners
+        deployDroneBtn.addEventListener('click', deployDrone);
+        emergencyModeBtn.addEventListener('click', function() {
+            addLogEntry('EMERGENCY MODE ACTIVATED! Maximum priority clearance requested.', 'alert');
+            deployDrone();
+        });
+        
+        clearConsoleBtn.addEventListener('click', function() {
+            document.getElementById('console-content').innerHTML = '';
+            addLogEntry('Console cleared. System operational.', 'info');
+        });
+        
+        startSimBtn.addEventListener('click', startSimulation);
+        
+        // Update sliders
+        const sliders = document.querySelectorAll('.slider');
+        sliders.forEach(slider => {
+            const valueDisplay = slider.nextElementSibling;
+            slider.addEventListener('input', function() {
+                if (this.id === 'traffic-density') {
+                    valueDisplay.textContent = `${this.value}%`;
+                } else if (this.id === 'drone-volume') {
+                    valueDisplay.textContent = `${this.value}%`;
+                } else if (this.id === 'ambulance-speed') {
+                    valueDisplay.textContent = `${this.value} km/h`;
+                }
+            });
+        });
+        
+        // Start simulation clock
+        setInterval(updateSimulationTime, 1000);
+
+        // Start video call with doctor
+        startVideoCallBtn.addEventListener('click', function() {
+            videoCallContainer.style.display = 'flex';
+            callStatusIndicator.style.backgroundColor = 'orange';
+            callStatusText.textContent = 'Connecting...';
+            
+            // Initialize ZegoCloud video call
+            const roomID = '108_emergency'; // Fixed room ID for doctor to join
+            const userID = 'drone_' + Math.floor(Math.random() * 10000);
+            const userName = droneOperatorName; // Use the retrieved drone operator name
+            const appID = 1986706440;
+            const serverSecret = "c5c2b752e9cf64e6a1aa56e18ba883f4";
+            
+            const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
+                appID, 
+                serverSecret, 
+                roomID, 
+                userID, 
+                userName
+            );
+            
+            const zp = ZegoUIKitPrebuilt.create(kitToken);
+            zp.joinRoom({
+                container: document.querySelector("#zego-video-container"),
+                scenario: {
+                    mode: ZegoUIKitPrebuilt.VideoConference,
+                },
+                turnOnMicrophoneWhenJoining: true,
+                turnOnCameraWhenJoining: true,
+                showMyCameraToggleButton: true,
+                showMyMicrophoneToggleButton: true,
+                showAudioVideoSettingsButton: true,
+                showScreenSharingButton: false,
+                showTextChat: true,
+                showUserList: true,
+                maxUsers: 2,
+                layout: "Auto",
+                showLayoutButton: false,
+            });
+            
+            zp.on('roomStateChanged', (state) => {
+                if (state === 'CONNECTED') {
+                    callStatusIndicator.style.backgroundColor = 'green';
+                    callStatusText.textContent = 'Connected';
+                    addLogEntry('Video call connected with doctor.', 'success');
+                } else if (state === 'DISCONNECTED') {
+                    callStatusIndicator.style.backgroundColor = 'red';
+                    callStatusText.textContent = 'Disconnected';
+                    videoCallContainer.style.display = 'none';
+                    addLogEntry('Video call ended.', 'info');
+                }
+            });
+            
+            addLogEntry('Initiating video call with doctor...', 'info');
+        });
+
+        // Emergency call simulation
+        document.getElementById("trigger-emergency").addEventListener("click", function () {
+            addLogEntry("🚨 Emergency 108 call received!", "alert");
+            
+            // Simulate current location
+            getCurrentLocation();
+            
+            setTimeout(() => {
+                addLogEntry("🛫 Dispatching drone to accident site...", "info");
+                startSimulation();
+                
+                setTimeout(() => {
+                    deployDrone();
+
+                    setTimeout(() => {
+                        // Simulate doctor monitoring UI
+                        document.getElementById("doctor-monitoring").style.display = "block";
+                        addLogEntry("📡 Live feed sent to doctor. Monitoring patient condition...", "info");
+                        playVoiceAlert();
+
+                    }, 5000);
+                }, 3000);
+            }, 2000);
+        });
+
+        document.getElementById("doctor-close-panel").addEventListener("click", function () {
+            document.getElementById("doctor-monitoring").style.display = "none";
+            addLogEntry("✅ Doctor acknowledged. Route finalized to hospital.", "success");
+        });
+
+        // Make video call container movable (Mouse and Touch)
+        const videoCallHeader = document.querySelector('.video-call-header');
+        const videoCallContainerElement = document.getElementById('video-call-container'); // Get the container element
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        function getEventCoords(e) {
+            return e.touches ? e.touches[0] : e;
+        }
+
+        function startDrag(e) {
+            isDragging = true;
+            const coords = getEventCoords(e);
+            const rect = videoCallContainerElement.getBoundingClientRect(); // Use the container element
+            offsetX = coords.clientX - rect.left;
+            offsetY = coords.clientY - rect.top;
+            videoCallContainerElement.style.cursor = 'grabbing';
+            videoCallContainerElement.style.transition = 'none'; // Disable transition during drag
+            
+            // Prevent default touch actions only if it's a drag start
+            if (e.type === 'touchstart') {
+                e.preventDefault(); 
+            }
+        }
+
+        function doDrag(e) {
+            if (!isDragging) return;
+            
+            const coords = getEventCoords(e);
+            let newX = coords.clientX - offsetX;
+            let newY = coords.clientY - offsetY;
+
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const containerWidth = videoCallContainerElement.offsetWidth;
+            const containerHeight = videoCallContainerElement.offsetHeight;
+
+            // Constrain movement within viewport
+            newX = Math.max(0, Math.min(newX, viewportWidth - containerWidth));
+            newY = Math.max(0, Math.min(newY, viewportHeight - containerHeight));
+
+            videoCallContainerElement.style.left = `${newX}px`;
+            videoCallContainerElement.style.top = `${newY}px`;
+            videoCallContainerElement.style.transform = 'none'; // Remove transform for direct positioning
+            
+            // Prevent default touch actions during move
+            if (e.type === 'touchmove') {
+                e.preventDefault();
+            }
+        }
+
+        function endDrag() {
+            isDragging = false;
+            videoCallContainerElement.style.cursor = 'grab';
+            videoCallContainerElement.style.transition = ''; // Re-enable transition after drag
+        }
+
+        // Mouse events for dragging
+        videoCallHeader.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', doDrag);
+        document.addEventListener('mouseup', endDrag);
+
+        // Touch events for dragging
+        videoCallHeader.addEventListener('touchstart', startDrag, { passive: false }); 
+        document.addEventListener('touchmove', doDrag, { passive: false }); 
+        document.addEventListener('touchend', endDrag);
+        document.addEventListener('touchcancel', endDrag); // Handle touch interruption
+
+        // Prevent text selection while dragging (redundant with e.preventDefault() in startDrag, but harmless)
+        videoCallHeader.addEventListener('selectstart', (e) => {
+            e.preventDefault();
+        });
+
+        // Custom Resizing Logic (Touch and Mouse)
+        let isResizing = false;
+        let startWidth, startHeight, startX, startY;
+
+        function startResize(e) {
+            isResizing = true;
+            const coords = getEventCoords(e);
+            startWidth = videoCallContainer.offsetWidth;
+            startHeight = videoCallContainer.offsetHeight;
+            startX = coords.clientX;
+            startY = coords.clientY;
+            videoCallContainer.style.transition = 'none'; // Disable transition during resize
+            videoCallContainer.style.overflow = 'visible'; // Allow content to overflow during resize
+            
+            if (e.type === 'touchstart') {
+                e.preventDefault();
+            }
+        }
+
+        function doResize(e) {
+            if (!isResizing) return;
+            const coords = getEventCoords(e);
+            
+            let newWidth = startWidth + (coords.clientX - startX);
+            let newHeight = startHeight + (coords.clientY - startY);
+
+            // Apply min/max constraints
+            const minWidth = parseInt(getComputedStyle(videoCallContainer).minWidth);
+            const minHeight = parseInt(getComputedStyle(videoCallContainer).minHeight);
+            const maxWidth = window.innerWidth * 0.9; // Max 90vw
+            const maxHeight = window.innerHeight * 0.9; // Max 90vh
+
+            newWidth = Math.max(minWidth, Math.min(newWidth, maxWidth));
+            newHeight = Math.max(minHeight, Math.min(newHeight, maxHeight));
+
+            videoCallContainer.style.width = `${newWidth}px`;
+            videoCallContainer.style.height = `${newHeight}px`;
+
+            if (e.type === 'touchmove') {
+                e.preventDefault();
+            }
+        }
+
+        function endResize() {
+            isResizing = false;
+            videoCallContainer.style.transition = ''; // Re-enable transition
+            videoCallContainer.style.overflow = 'hidden'; // Reset overflow
+        }
+
+        // Mouse events for resizing
+        videoCallResizeHandle.addEventListener('mousedown', startResize);
+        document.addEventListener('mousemove', doResize);
+        document.addEventListener('mouseup', endResize);
+
+        // Touch events for resizing
+        videoCallResizeHandle.addEventListener('touchstart', startResize, { passive: false });
+        document.addEventListener('touchmove', doResize, { passive: false });
+        document.addEventListener('touchend', endResize);
+        document.addEventListener('touchcancel', endResize);
+    }
+    
+    // Initialize the map
+    function initMap() {
+        // Create the map centered on Kurnool
+        map = L.map('map').setView(KURNOOL_COORDS, 14);
+        
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Add Kurnool city label
+        L.marker(KURNOOL_COORDS, {
+            icon: L.divIcon({
+                className: 'city-label',
+                html: '<div style="font-size: 16px; font-weight: bold; color: white; text-shadow: 1px 1px 3px black;">KURNOOL</div>',
+                iconSize: [0, 0]
+            })
+        }).addTo(map);
+        
+        // Add traffic layer
+        const trafficLayer = L.layerGroup().addTo(map);
+        for (let i = 0; i < 50; i++) {
+            const offsetLat = (Math.random() - 0.5) * 0.1;
+            const offsetLng = (Math.random() - 0.5) * 0.1;
+            const vehiclePos = [KURNOOL_COORDS[0] + offsetLat, KURNOOL_COORDS[1] + offsetLng];
+            
+            const vehicleType = Math.random() > 0.5 ? "car" : "bike";
+            const iconHtml = vehicleType === "car" ? 
+                '<i class="fas fa-car" style="color: #e9c46a;"></i>' : 
+                '<i class="fas fa-motorcycle" style="color: #8d99ae;"></i>';
+            
+            L.marker(vehiclePos, {
+                icon: L.divIcon({
+                    className: 'vehicle-marker',
+                    html: iconHtml,
+                    iconSize: [20, 20]
+                })
+            }).addTo(trafficLayer);
+        }
+    }
+    
+    // Initial setup
+    document.addEventListener('DOMContentLoaded', function() {
+        initMap();
+        initializeApp();
+    });
+</script>
+</body>
+</html>
