@@ -1516,14 +1516,12 @@
                     maxUsers: 2,
                     layout: "Auto",
                     showLayoutButton: false,
-                });
-                
-                zp.on('roomStateChanged', (state) => {
-                    if (state === 'CONNECTED') {
+                    onJoinRoom: function() {
                         callStatusIndicator.style.backgroundColor = 'green';
                         callStatusText.textContent = 'Connected';
                         addLogEntry('Video call connected with doctor.', 'success');
-                    } else if (state === 'DISCONNECTED') {
+                    },
+                    onLeaveRoom: function() {
                         callStatusIndicator.style.backgroundColor = 'red';
                         callStatusText.textContent = 'Disconnected';
                         videoCallContainer.style.display = 'none';
