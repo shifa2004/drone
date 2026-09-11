@@ -944,41 +944,40 @@
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<!-- Socket.IO served by OUR OWN server -->
+<script src="/socket.io/socket.io.js"></script>
 <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
 <script>
     // ======================================================
-    // DEFENSIVE SOCKET.IO WRAPPER
-    // Handles the case where Socket.IO fails to load (e.g.
-    // when opened via file:// or when CDN is unreachable)
+    // SOCKET.IO CONNECTION (points to OUR OWN Render server)
     // ======================================================
     var socket = null;
 
     function initSocketConnection() {
         if (typeof io === 'undefined') {
-            // Socket.IO not loaded. Retry every 2s, up to 5 times.
             if (!window._socketRetries) window._socketRetries = 0;
             window._socketRetries++;
-            if (window._socketRetries <= 5) {
-                setTimeout(initSocketConnection, 2000);
+            if (window._socketRetries <= 10) {
+                setTimeout(initSocketConnection, 1000);
             } else {
                 console.warn('Socket.IO unavailable. Running in offline mode.');
             }
             return;
         }
         try {
-            socket = io('https://trigunrobotics.com/smarthealth/', {
+            // Connect to same origin (ambulancepatroldrone.onrender.com OR localhost)
+            socket = io(window.location.origin, {
                 path: '/socket.io',
-                transports: ['websocket', 'polling'],
+                transports: ['polling', 'websocket'],
                 secure: true,
                 reconnection: true,
-                reconnectionAttempts: 5,
+                reconnectionAttempts: 10,
                 reconnectionDelay: 2000,
                 timeout: 10000
             });
 
             socket.on('connect', function() {
-                console.log('Socket connected');
+                console.log('✅ Socket connected to', window.location.origin);
                 socket.emit('join', '108');
             });
 
@@ -991,14 +990,13 @@
         }
     }
 
-    // Safe emit helper — never crashes if socket is null
+    // Safe emit helper
     function safeEmit(event, data) {
         if (socket && socket.connected) {
             try { socket.emit(event, data); } catch (e) { console.warn('emit failed:', e); }
         }
     }
 
-    // Kick off connection attempt
     initSocketConnection();
 
     // ======================================================
@@ -1135,6 +1133,7 @@
                         
                         startSimBtn.disabled = false;
 
+                        // Immediately broadcast GPS
                         safeEmit('updateDroneData', {
                             ambulance: { lat: lat, lng: lng },
                             drone: { lat: lat, lng: lng }
@@ -1303,9 +1302,16 @@
                 }
 
                 if (ambulanceMarker && droneMarker) {
+                    // Send GPS update to server → broadcast to doctor.html
                     safeEmit('updateDroneData', {
-                        ambulance: ambulanceMarker.getLatLng(),
-                        drone: droneMarker.getLatLng()
+                        ambulance: {
+                            lat: ambulanceMarker.getLatLng().lat,
+                            lng: ambulanceMarker.getLatLng().lng
+                        },
+                        drone: {
+                            lat: droneMarker.getLatLng().lat,
+                            lng: droneMarker.getLatLng().lng
+                        }
                     });
                 }
                 
@@ -1555,6 +1561,22 @@
             document.getElementById("doctor-monitoring").style.display = "none";
             addLogEntry("✅ Doctor acknowledged. Route finalized to hospital.", "success");
         });
+
+        // ===== Periodic GPS broadcast every 2 seconds (backup) =====
+        setInterval(function() {
+            if (ambulanceMarker && droneMarker && socket && socket.connected) {
+                socket.emit('updateDroneData', {
+                    ambulance: {
+                        lat: ambulanceMarker.getLatLng().lat,
+                        lng: ambulanceMarker.getLatLng().lng
+                    },
+                    drone: {
+                        lat: droneMarker.getLatLng().lat,
+                        lng: droneMarker.getLatLng().lng
+                    }
+                });
+            }
+        }, 2000);
 
         // ===== Drag video call container =====
         const videoCallHeader = document.querySelector('.video-call-header');
