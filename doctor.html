@@ -302,9 +302,9 @@
 
     <!-- Leaflet first (map needs it) -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- Socket.IO loaded with defer so a CDN failure doesn't break the page -->
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" defer></script>
-    <!-- Zego also deferred -->
+    <!-- Socket.IO served by OUR OWN server -->
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- Zego deferred -->
     <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js" defer></script>
 
     <script>
@@ -341,7 +341,7 @@
             }
 
             if (doctorHeaderName) doctorHeaderName.textContent = doctorName + ' Interface';
-            if (videoCallTitleText) videoCallTitleText.textContent = 'Video Call with ' + droneName;
+            if (videoCallTitleText) videoCallTitleText.innerHTML = '<i class="fas fa-video"></i> Video Call with ' + droneName;
         }
 
         // ============ LOGGING ============
@@ -419,22 +419,22 @@
             }
         }
 
-        // ============ SOCKET.IO (defensive, with retry) ============
+        // ============ SOCKET.IO ============
         function initSocket() {
             if (typeof io === 'undefined') {
-                // Socket.IO CDN not loaded yet (deferred). Retry.
                 console.warn('Socket.IO not ready, retrying in 1s...');
                 setTimeout(initSocket, 1000);
                 return;
             }
 
             try {
-                socket = io('https://trigunrobotics.com/smarthealth', {
+                // Connect to SAME ORIGIN (our Render server)
+                socket = io(window.location.origin, {
                     path: '/socket.io',
-                    transports: ['websocket', 'polling'],
+                    transports: ['polling', 'websocket'],
                     secure: true,
                     reconnection: true,
-                    reconnectionAttempts: 5,
+                    reconnectionAttempts: 10,
                     reconnectionDelay: 2000,
                     timeout: 10000
                 });
@@ -451,13 +451,13 @@
 
                 socket.on('connect_error', function(err) {
                     console.warn('Socket connection error:', err && err.message);
-                    // Log only once
                     if (!window._socketErrLogged) {
                         addLogEntry('Signaling server unreachable. Running in offline mode.', 'alert');
                         window._socketErrLogged = true;
                     }
                 });
 
+                // ===== RECEIVE GPS DATA FROM drone.html =====
                 socket.on('droneData', function(data) {
                     if (!data || !map) return;
 
@@ -475,7 +475,7 @@
                             map.setView(droneCoords, 16);
                             userHasSetView = true;
                         } else {
-                            map.panTo(droneCoords, { animate: true });
+                            map.panTo(droneCoords, { animate: true, duration: 0.5 });
                         }
                     }
 
@@ -483,8 +483,12 @@
                         droneAmbulanceLine.setLatLngs([ambulanceCoords, droneCoords]);
                     }
 
+                    // Log occasionally to avoid console spam
                     if (ambulanceCoords && droneCoords) {
-                        addLogEntry('GPS: Amb (' + ambulanceCoords[0].toFixed(5) + ', ' + ambulanceCoords[1].toFixed(5) + ')  Drone (' + droneCoords[0].toFixed(5) + ', ' + droneCoords[1].toFixed(5) + ')', 'info');
+                        window._gpsUpdateCount = (window._gpsUpdateCount || 0) + 1;
+                        if (window._gpsUpdateCount % 10 === 0) {
+                            addLogEntry('GPS sync: Drone (' + droneCoords[0].toFixed(5) + ', ' + droneCoords[1].toFixed(5) + ')', 'info');
+                        }
                     }
                 });
 
@@ -557,7 +561,6 @@
 
         // ============ INIT ============
         function init() {
-            // Cache DOM
             clearConsoleBtn = document.getElementById('clear-console');
             consoleContent = document.getElementById('console-content');
             simTimeEl = document.getElementById('sim-time');
