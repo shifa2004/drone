@@ -673,7 +673,7 @@
     (function() {
         'use strict';
 
-        // ========== SOCKET.IO INITIALIZATION (defensive) ==========
+        // ========== SOCKET.IO INITIALIZATION ==========
         var socket = null;
 
         function initSocket() {
@@ -683,9 +683,9 @@
                 return;
             }
             try {
-                socket = io('https://drone-ztxx.onrender.com/', {
-                    path: '/socket.io',
-                    transports: ['websocket', 'polling'],
+                // UPDATED: Pointing to your new Render URL
+                socket = io('https://ambulancepatroldrone.onrender.com', {
+                    transports: ['polling', 'websocket'], // Try polling first for Render free tier
                     secure: true,
                     reconnection: true,
                     reconnectionAttempts: 10,
@@ -699,7 +699,6 @@
         }
 
         // ========== DOM ELEMENT REFERENCES ==========
-        // We declare them inside DOMContentLoaded to be safe
         var statusIndicator, statusText;
         var droneInterfaceTitle, droneInterfaceDescription;
         var doctorInterfaceTitle, doctorInterfaceDescription;
@@ -789,9 +788,9 @@
             });
         }
 
-        // ========== MAIN INIT (runs after DOM ready) ==========
+        // ========== MAIN INIT ==========
         function initApp() {
-            // Cache DOM elements safely
+            // Cache DOM elements
             statusIndicator = document.getElementById('statusIndicator');
             statusText = document.getElementById('statusText');
             droneInterfaceTitle = document.getElementById('droneInterfaceTitle');
@@ -799,7 +798,6 @@
             doctorInterfaceTitle = document.getElementById('doctorInterfaceTitle');
             doctorInterfaceDescription = document.getElementById('doctorInterfaceDescription');
 
-            // Sanity check
             if (!statusIndicator || !statusText) {
                 console.error('Critical: statusIndicator or statusText not found in DOM.');
                 return;
@@ -889,9 +887,13 @@
                 var selectedDrone = document.getElementById('droneToConnectSelect').value;
                 if (doctorName && selectedDrone) {
                     var connectionData = { role: 'doctor', doctorName: doctorName, droneName: selectedDrone };
+                    // Save to localStorage immediately
+                    localStorage.setItem('currentConnection', JSON.stringify(connectionData));
                     if (socket) socket.emit('updateConnection', connectionData);
                     alert('Doctor ' + doctorName + ' connected to Drone ' + selectedDrone + '!');
                     closeAllModals();
+                    // Update UI locally just in case socket is slow
+                    updateUIWithConnection(connectionData);
                 } else {
                     alert('Please select your name and a drone to connect to.');
                 }
@@ -904,9 +906,13 @@
                 var selectedDoctor = document.getElementById('doctorToConnectSelect').value;
                 if (operatorName && selectedDoctor) {
                     var connectionData = { role: 'droneOperator', operatorName: operatorName, doctorName: selectedDoctor };
+                    // Save to localStorage immediately
+                    localStorage.setItem('currentConnection', JSON.stringify(connectionData));
                     if (socket) socket.emit('updateConnection', connectionData);
                     alert('Drone Operator ' + operatorName + ' connected to Doctor ' + selectedDoctor + '!');
                     closeAllModals();
+                    // Update UI locally just in case socket is slow
+                    updateUIWithConnection(connectionData);
                 } else {
                     alert('Please select your name and a doctor to connect to.');
                 }
@@ -930,25 +936,47 @@
                 }
             });
 
-            // ----- Service card buttons (FIXED) -----
+            // ----- Service card buttons (UPDATED: Requires Connection) -----
             var droneBtn = document.getElementById('droneInterfaceBtn');
             var doctorBtn = document.getElementById('doctorInterfaceBtn');
+            var droneCard = document.getElementById('droneSimulator');
+            var doctorCard = document.getElementById('doctorInterface');
+
+            // Helper function to safely navigate only if connected
+            function attemptNavigation(targetUrl) {
+                var storedConnection = null;
+                try {
+                    storedConnection = JSON.parse(localStorage.getItem('currentConnection'));
+                } catch(e) { console.error(e); }
+
+                // Check if a valid connection exists
+                if (storedConnection && (storedConnection.doctorName || storedConnection.operatorName)) {
+                    window.location.href = targetUrl;
+                } else {
+                    alert("Access Denied: Please register/login and connect to a Doctor or Drone first.");
+                    // Open the user type selection modal automatically
+                    closeAllModals();
+                    if (userTypeModal) userTypeModal.style.display = 'block';
+                }
+            }
 
             if (droneBtn) droneBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                window.location.href = 'drone.html';
+                e.stopPropagation(); // Prevent the card click from firing
+                attemptNavigation('drone.html');
             });
 
             if (doctorBtn) doctorBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                window.location.href = 'doctor.html';
+                e.stopPropagation(); // Prevent the card click from firing
+                attemptNavigation('doctor.html');
             });
 
-            // Also make the card clickable
-            var droneCard = document.getElementById('droneSimulator');
-            var doctorCard = document.getElementById('doctorInterface');
-            if (droneCard) droneCard.addEventListener('click', function() { window.location.href = 'drone.html'; });
-            if (doctorCard) doctorCard.addEventListener('click', function() { window.location.href = 'doctor.html'; });
+            // Card click handlers
+            if (droneCard) droneCard.addEventListener('click', function() { 
+                attemptNavigation('drone.html'); 
+            });
+            if (doctorCard) doctorCard.addEventListener('click', function() { 
+                attemptNavigation('doctor.html'); 
+            });
 
             // ----- Registration conditional fields -----
             var regUserTypeSelect = document.getElementById('regUserType');
@@ -1038,7 +1066,6 @@
             }, 5000);
         }
 
-        // Run initApp when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initApp);
         } else {
