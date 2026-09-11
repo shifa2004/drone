@@ -50,45 +50,37 @@
             flex-shrink: 0;
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .logo { display: flex; align-items: center; gap: 10px; }
 
-        .logo-icon {
-            font-size: 2rem;
-            color: var(--hospital);
-        }
+        .logo-icon { font-size: 2rem; color: var(--hospital); }
 
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-        .logo-line-1{
+        .logo-text { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+
+        .logo-line-1 {
             font-size: 1.5rem;
             font-weight: 600;
             color: var(--iiit-gold);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        
-        .logo-line-2{
+
+        .logo-line-2 {
             font-size: 1.8rem;
             font-weight: 700;
             background: linear-gradient(to right, var(--accent), var(--primary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-             margin: 3px 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            margin: 3px 0;
         }
+
         .logo-line-3 {
-             font-size: 0.9rem;
-             color: var(--accent);
-             font-weight: 500;
-             letter-spacing: 0.5px;
+            font-size: 0.9rem;
+            color: var(--accent);
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
+
         .main-container {
             display: flex;
             flex: 1;
@@ -112,8 +104,7 @@
 
         #map {
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 0; left: 0;
             width: 100%;
             height: 100%;
             z-index: 1;
@@ -212,39 +203,18 @@
             line-height: 1.4;
         }
 
-        .log-entry {
-            margin-bottom: 5px;
-        }
+        .log-entry { margin-bottom: 5px; }
+        .log-timestamp { color: var(--accent); margin-right: 10px; font-weight: 600; }
+        .log-info { color: var(--light); }
+        .log-success { color: var(--success); }
+        .log-alert { color: var(--danger); }
 
-        .log-timestamp {
-            color: var(--accent);
-            margin-right: 10px;
-            font-weight: 600;
-        }
-
-        .log-info {
-            color: var(--light);
-        }
-
-        .log-success {
-            color: var(--success);
-        }
-
-        .log-alert {
-            color: var(--danger);
-        }
-
-        /* Custom markers */
         .ambulance-marker {
             background: var(--primary);
-            width: 30px;
-            height: 30px;
+            width: 30px; height: 30px;
             border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 16px;
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-size: 16px;
             box-shadow: 0 0 10px rgba(230, 57, 70, 0.7);
             border: 2px solid white;
             z-index: 1000;
@@ -252,14 +222,10 @@
 
         .drone-marker {
             background: #28e4bb;
-            width: 25px;
-            height: 25px;
+            width: 25px; height: 25px;
             border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 14px;
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-size: 14px;
             box-shadow: 0 0 8px rgba(168, 218, 220, 0.8);
             border: 2px solid white;
             z-index: 1001;
@@ -270,34 +236,15 @@
             border: none !important;
         }
 
-        /* Media Queries for responsiveness */
         @media (max-width: 1024px) {
-            .main-container {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .map-section, .video-section {
-                flex: none;
-                width: 95%;
-                min-width: unset;
-            }
-
-            .map-section {
-                height: 400px;
-            }
-
-            .console-section {
-                width: 95%;
-                margin: 10px auto;
-            }
+            .main-container { flex-direction: column; align-items: center; }
+            .map-section, .video-section { flex: none; width: 95%; min-width: unset; }
+            .map-section { height: 400px; }
+            .console-section { width: 95%; margin: 10px auto; }
         }
 
         @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                gap: 10px;
-            }
+            header { flex-direction: column; gap: 10px; }
         }
     </style>
 </head>
@@ -309,8 +256,8 @@
                 <div class="logo-line-1">Indian Institute of Information Technology, Design and Manufacturing, Kurnool</div>
                 <div class="logo-line-1-sub">5G Labs, Trigun Robotics System Pvt Ltd</div>
                 <div class="logo-line-2" id="doctor-header-name">Doctor Interface</div>
-                <div class="logo-line-3">Design and Developed by Dr.K.Krishna Naik,Dr.M.Ravi Kumar and G.Kashifa Anjum </div>
-        </div>
+                <div class="logo-line-3">Design and Developed by Dr.K.Krishna Naik, Dr.M.Ravi Kumar and G.Kashifa Anjum</div>
+            </div>
         </div>
         <div class="header-controls">
             <div class="simulation-time">
@@ -332,7 +279,7 @@
             </div>
         </section>
     </div>
-    
+
     <section class="console-section">
         <div class="console-header">
             <div class="console-title">
@@ -353,201 +300,297 @@
         </div>
     </section>
 
+    <!-- Leaflet first (map needs it) -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-    <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
+    <!-- Socket.IO loaded with defer so a CDN failure doesn't break the page -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" defer></script>
+    <!-- Zego also deferred -->
+    <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js" defer></script>
+
     <script>
-        // Initialize variables
-        let map;
-        let ambulanceMarker, droneMarker, droneAmbulanceLine;
-        const KURNOOL_COORDS = [15.8281, 78.0373]; // Default center for Kurnool
-        let zp; // ZegoCloud instance
-        const socket = io('https://testfile6.onrender.com'); // Connect to the Socket.IO server
+    (function() {
+        'use strict';
 
-        // Get DOM elements
-        const clearConsoleBtn = document.getElementById('clear-console');
-        const consoleContent = document.getElementById('console-content');
-        const simTime = document.getElementById('sim-time');
-        const doctorHeaderName = document.getElementById('doctor-header-name');
-        const videoCallTitleText = document.getElementById('video-call-title-text');
+        // ============ STATE ============
+        var map = null;
+        var ambulanceMarker = null, droneMarker = null, droneAmbulanceLine = null;
+        var socket = null;
+        var zp = null;
+        var KURNOOL_COORDS = [15.8281, 78.0373];
+        var userHasSetView = false;
 
-        // Retrieve connection info from localStorage
-        const currentConnection = JSON.parse(localStorage.getItem('currentConnection'));
-        let doctorName = "Doctor";
-        let droneName = "Ambulance Drone";
+        // ============ DOM CACHE ============
+        var clearConsoleBtn, consoleContent, simTimeEl, doctorHeaderName, videoCallTitleText;
 
-        if (currentConnection && currentConnection.role === 'doctor') {
-            doctorName = currentConnection.doctorName;
-            droneName = currentConnection.droneName;
-            doctorHeaderName.textContent = `${doctorName} Interface`;
-            videoCallTitleText.textContent = `Video Call with ${droneName}`;
-        } else if (currentConnection && currentConnection.role === 'droneOperator') {
-            // This case shouldn't happen if doctor.html is only for doctors,
-            // but good to handle defensively.
-            doctorName = currentConnection.doctorName;
-            droneName = currentConnection.operatorName;
-            doctorHeaderName.textContent = `${doctorName} Interface`;
-            videoCallTitleText.textContent = `Video Call with ${droneName}`;
-        } else {
-            doctorHeaderName.textContent = `Doctor Interface`;
-            videoCallTitleText.textContent = `Emergency Video Call`;
-        }
+        // ============ NAMES FROM LOCALSTORAGE ============
+        var doctorName = "Doctor";
+        var droneName = "Ambulance Drone";
 
-        // --- Map Initialization ---
-        function initMap() {
-            map = L.map('map').setView(KURNOOL_COORDS, 14);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
+        function readConnectionInfo() {
+            var currentConnection = null;
+            try {
+                currentConnection = JSON.parse(localStorage.getItem('currentConnection'));
+            } catch (e) { currentConnection = null; }
 
-            ambulanceMarker = L.marker(KURNOOL_COORDS, {
-                icon: L.divIcon({
-                    className: 'ambulance-marker',
-                    html: '🚑',
-                    iconSize: [30, 30]
-                })
-            }).addTo(map);
-
-            droneMarker = L.marker(KURNOOL_COORDS, {
-                icon: L.divIcon({
-                    className: 'drone-marker',
-                    html: '✈',
-                    iconSize: [25, 25]
-                })
-            }).addTo(map);
-
-            // Initialize the dotted line between drone and ambulance
-            droneAmbulanceLine = L.polyline([KURNOOL_COORDS, KURNOOL_COORDS], {
-                color: '#a8dadc', // Accent color
-                weight: 3,
-                opacity: 0.7,
-                dashArray: '5, 10' // Dotted line
-            }).addTo(map);
-
-            addLogEntry('Map initialized. Waiting for GPS data from drone.', 'info');
-        }
-        
-
-        // --- Socket.IO for GPS Sync ---
-        socket.on('connect', () => {
-            addLogEntry('Connected to signaling server.', 'info');
-            socket.emit('join', '108'); // Doctor joins the '108' room
-            addLogEntry('Joined room: 108', 'info');
-        });
-
-        socket.on('droneData', (data) => {
-            let ambulanceCoords = KURNOOL_COORDS;
-            let droneCoords = KURNOOL_COORDS;
-
-            if (data.ambulance) {
-                ambulanceCoords = [data.ambulance.lat, data.ambulance.lng];
-                ambulanceMarker.setLatLng(ambulanceCoords);
-            }
-            if (data.drone) {
-                droneCoords = [data.drone.lat, data.drone.lng];
-                droneMarker.setLatLng(droneCoords);
-                map.setView(droneCoords, map.getZoom()); // Center map on drone
+            if (currentConnection && currentConnection.role === 'doctor') {
+                doctorName = currentConnection.doctorName || "Doctor";
+                droneName = currentConnection.droneName || "Ambulance Drone";
+            } else if (currentConnection && currentConnection.role === 'droneOperator') {
+                doctorName = currentConnection.doctorName || "Doctor";
+                droneName = currentConnection.operatorName || "Ambulance Drone";
             }
 
-            // Update the dotted line
-            if (droneAmbulanceLine) {
-                droneAmbulanceLine.setLatLngs([ambulanceCoords, droneCoords]);
-            }
-
-            addLogEntry(`GPS Update: Ambulance (${ambulanceCoords[0].toFixed(4)}, ${ambulanceCoords[1].toFixed(4)}), Drone (${droneCoords[0].toFixed(4)}, ${droneCoords[1].toFixed(4)})`, 'info');
-        });
-
-        // --- ZegoCloud Video Call Functionality ---
-        async function startCall() {
-            addLogEntry('Joining emergency video call...', 'info');
-
-            const roomID = '108_emergency'; // Same room ID as drone
-            const userID = 'doctor_' + Math.floor(Math.random() * 10000);
-            const userName = doctorName; // Use the retrieved doctor name
-            const appID = 97925736;
-            const serverSecret = "c658d619ed9495866b0645237b4ef580";
-            
-            const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
-                appID, 
-                serverSecret, 
-                roomID, 
-                userID, 
-                userName
-            );
-            
-            zp = ZegoUIKitPrebuilt.create(kitToken);
-            zp.joinRoom({
-                container: document.querySelector("#zego-video-container"),
-                scenario: {
-                    mode: ZegoUIKitPrebuilt.VideoConference,
-                },
-                turnOnMicrophoneWhenJoining: true,
-                turnOnCameraWhenJoining: true,
-                showMyCameraToggleButton: true,
-                showMyMicrophoneToggleButton: true,
-                showAudioVideoSettingsButton: true,
-                showScreenSharingButton: false,
-                showTextChat: true,
-                showUserList: true,
-                maxUsers: 2,
-                layout: "Auto",
-                showLayoutButton: false,
-            });
-            
-            zp.on('roomStateChanged', (state) => {
-                if (state === 'CONNECTED') {
-                    addLogEntry('Successfully connected to emergency video call.', 'success');
-                } else if (state === 'DISCONNECTED') {
-                    addLogEntry('Video call ended.', 'info');
-                }
-            });
+            if (doctorHeaderName) doctorHeaderName.textContent = doctorName + ' Interface';
+            if (videoCallTitleText) videoCallTitleText.textContent = 'Video Call with ' + droneName;
         }
 
-        // --- Console Logging ---
+        // ============ LOGGING ============
         function addLogEntry(message, type) {
-            const logEntry = document.createElement('div');
+            if (!consoleContent) return;
+            var logEntry = document.createElement('div');
             logEntry.className = 'log-entry';
 
-            const timestamp = document.createElement('span');
+            var timestamp = document.createElement('span');
             timestamp.className = 'log-timestamp';
-            timestamp.textContent = simTime.textContent;
+            timestamp.textContent = simTimeEl ? simTimeEl.textContent : '00:00:00';
 
-            const logMessage = document.createElement('span');
-            logMessage.className = `log-message log-${type}`;
+            var logMessage = document.createElement('span');
+            logMessage.className = 'log-message log-' + (type || 'info');
             logMessage.textContent = message;
 
             logEntry.appendChild(timestamp);
             logEntry.appendChild(logMessage);
-
             consoleContent.appendChild(logEntry);
             consoleContent.scrollTop = consoleContent.scrollHeight;
+            console.log('[' + (type || 'info') + '] ' + message);
         }
 
-        // --- Simulation Time Update ---
+        // ============ MAP ============
+        function initMap() {
+            if (typeof L === 'undefined') {
+                addLogEntry('Leaflet failed to load. Check internet connection.', 'alert');
+                return;
+            }
+
+            var mapEl = document.getElementById('map');
+            if (!mapEl) {
+                addLogEntry('Map container #map not found.', 'alert');
+                return;
+            }
+
+            try {
+                map = L.map('map', { center: KURNOOL_COORDS, zoom: 14, zoomControl: true });
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                    maxZoom: 19
+                }).addTo(map);
+
+                ambulanceMarker = L.marker(KURNOOL_COORDS, {
+                    icon: L.divIcon({
+                        className: 'ambulance-marker',
+                        html: '🚑',
+                        iconSize: [30, 30],
+                        iconAnchor: [15, 15]
+                    })
+                }).addTo(map).bindPopup('<b>Ambulance</b>');
+
+                droneMarker = L.marker(KURNOOL_COORDS, {
+                    icon: L.divIcon({
+                        className: 'drone-marker',
+                        html: '✈',
+                        iconSize: [25, 25],
+                        iconAnchor: [12, 12]
+                    })
+                }).addTo(map).bindPopup('<b>Drone</b>');
+
+                droneAmbulanceLine = L.polyline([KURNOOL_COORDS, KURNOOL_COORDS], {
+                    color: '#a8dadc',
+                    weight: 3,
+                    opacity: 0.7,
+                    dashArray: '5, 10'
+                }).addTo(map);
+
+                addLogEntry('Map initialized. Waiting for GPS data from drone.', 'info');
+
+                setTimeout(function() { if (map) map.invalidateSize(); }, 300);
+            } catch (e) {
+                addLogEntry('Map init failed: ' + e.message, 'alert');
+            }
+        }
+
+        // ============ SOCKET.IO (defensive, with retry) ============
+        function initSocket() {
+            if (typeof io === 'undefined') {
+                // Socket.IO CDN not loaded yet (deferred). Retry.
+                console.warn('Socket.IO not ready, retrying in 1s...');
+                setTimeout(initSocket, 1000);
+                return;
+            }
+
+            try {
+                socket = io('https://trigunrobotics.com/smarthealth', {
+                    path: '/socket.io',
+                    transports: ['websocket', 'polling'],
+                    secure: true,
+                    reconnection: true,
+                    reconnectionAttempts: 5,
+                    reconnectionDelay: 2000,
+                    timeout: 10000
+                });
+
+                socket.on('connect', function() {
+                    addLogEntry('Connected to signaling server.', 'success');
+                    socket.emit('join', '108');
+                    addLogEntry('Joined room: 108', 'info');
+                });
+
+                socket.on('disconnect', function() {
+                    addLogEntry('Disconnected from signaling server.', 'alert');
+                });
+
+                socket.on('connect_error', function(err) {
+                    console.warn('Socket connection error:', err && err.message);
+                    // Log only once
+                    if (!window._socketErrLogged) {
+                        addLogEntry('Signaling server unreachable. Running in offline mode.', 'alert');
+                        window._socketErrLogged = true;
+                    }
+                });
+
+                socket.on('droneData', function(data) {
+                    if (!data || !map) return;
+
+                    var ambulanceCoords = null;
+                    var droneCoords = null;
+
+                    if (data.ambulance && typeof data.ambulance.lat === 'number') {
+                        ambulanceCoords = [data.ambulance.lat, data.ambulance.lng];
+                        if (ambulanceMarker) ambulanceMarker.setLatLng(ambulanceCoords);
+                    }
+                    if (data.drone && typeof data.drone.lat === 'number') {
+                        droneCoords = [data.drone.lat, data.drone.lng];
+                        if (droneMarker) droneMarker.setLatLng(droneCoords);
+                        if (!userHasSetView) {
+                            map.setView(droneCoords, 16);
+                            userHasSetView = true;
+                        } else {
+                            map.panTo(droneCoords, { animate: true });
+                        }
+                    }
+
+                    if (droneAmbulanceLine && ambulanceCoords && droneCoords) {
+                        droneAmbulanceLine.setLatLngs([ambulanceCoords, droneCoords]);
+                    }
+
+                    if (ambulanceCoords && droneCoords) {
+                        addLogEntry('GPS: Amb (' + ambulanceCoords[0].toFixed(5) + ', ' + ambulanceCoords[1].toFixed(5) + ')  Drone (' + droneCoords[0].toFixed(5) + ', ' + droneCoords[1].toFixed(5) + ')', 'info');
+                    }
+                });
+
+            } catch (e) {
+                console.error('Socket init failed:', e);
+                addLogEntry('Socket init failed: ' + e.message, 'alert');
+            }
+        }
+
+        // ============ VIDEO CALL ============
+        function startCall() {
+            if (typeof ZegoUIKitPrebuilt === 'undefined') {
+                addLogEntry('Video service not loaded yet. Retrying in 2s...', 'info');
+                setTimeout(startCall, 2000);
+                return;
+            }
+
+            addLogEntry('Joining emergency video call...', 'info');
+
+            var roomID = '108_emergency';
+            var userID = 'doctor_' + Math.floor(Math.random() * 10000);
+            var userName = doctorName;
+            var appID = 1986706440;
+            var serverSecret = "c5c2b752e9cf64e6a1aa56e18ba883f4";
+
+            try {
+                var kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
+                    appID, serverSecret, roomID, userID, userName
+                );
+
+                zp = ZegoUIKitPrebuilt.create(kitToken);
+                zp.joinRoom({
+                    container: document.querySelector("#zego-video-container"),
+                    scenario: { mode: ZegoUIKitPrebuilt.VideoConference },
+                    turnOnMicrophoneWhenJoining: true,
+                    turnOnCameraWhenJoining: true,
+                    showMyCameraToggleButton: true,
+                    showMyMicrophoneToggleButton: true,
+                    showAudioVideoSettingsButton: true,
+                    showScreenSharingButton: false,
+                    showTextChat: true,
+                    showUserList: true,
+                    maxUsers: 2,
+                    layout: "Auto",
+                    showLayoutButton: false,
+                });
+
+                zp.on('roomStateChanged', function(state) {
+                    if (state === 'CONNECTED') {
+                        addLogEntry('Successfully connected to emergency video call.', 'success');
+                    } else if (state === 'DISCONNECTED') {
+                        addLogEntry('Video call ended.', 'info');
+                    }
+                });
+            } catch (e) {
+                console.error('Video call error:', e);
+                addLogEntry('Video call failed: ' + e.message, 'alert');
+            }
+        }
+
+        // ============ CLOCK ============
         function updateSimulationTime() {
-            const now = new Date();
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const seconds = now.getSeconds().toString().padStart(2, '0');
-            simTime.textContent = `${hours}:${minutes}:${seconds}`;
+            if (!simTimeEl) return;
+            var now = new Date();
+            var h = String(now.getHours()).padStart(2, '0');
+            var m = String(now.getMinutes()).padStart(2, '0');
+            var s = String(now.getSeconds()).padStart(2, '0');
+            simTimeEl.textContent = h + ':' + m + ':' + s;
         }
 
-        // --- Event Listeners ---
-        clearConsoleBtn.addEventListener('click', () => {
-            consoleContent.innerHTML = '';
-            addLogEntry('Console cleared.', 'info');
-        });
+        // ============ INIT ============
+        function init() {
+            // Cache DOM
+            clearConsoleBtn = document.getElementById('clear-console');
+            consoleContent = document.getElementById('console-content');
+            simTimeEl = document.getElementById('sim-time');
+            doctorHeaderName = document.getElementById('doctor-header-name');
+            videoCallTitleText = document.getElementById('video-call-title-text');
 
-        // --- Initial Setup ---
-        document.addEventListener('DOMContentLoaded', () => {
+            readConnectionInfo();
+
             initMap();
+            initSocket();
+
             setInterval(updateSimulationTime, 1000);
-            
-            // Auto-join call when page loads
-            setTimeout(() => {
-                startCall();
-            }, 1000);
-        });
+            updateSimulationTime();
+
+            if (clearConsoleBtn) {
+                clearConsoleBtn.addEventListener('click', function() {
+                    if (consoleContent) consoleContent.innerHTML = '';
+                    addLogEntry('Console cleared.', 'info');
+                });
+            }
+
+            // Auto-join video call after everything's loaded
+            setTimeout(startCall, 1500);
+
+            addLogEntry('Doctor interface ready.', 'info');
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    })();
     </script>
 </body>
 </html>
