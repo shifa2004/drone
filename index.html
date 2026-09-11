@@ -665,14 +665,23 @@
         </div>
     </div>
 
-    <!-- Socket.IO loaded with defer to ensure it's available -->
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <!-- Socket.IO loaded with defer -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" defer></script>
+    
+    <!-- Main script wrapped in DOMContentLoaded -->
     <script>
-        // Wait for DOM to be fully loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Socket.IO client
-            var socket = null;
-            
+    (function() {
+        'use strict';
+
+        // ========== SOCKET.IO INITIALIZATION (defensive) ==========
+        var socket = null;
+
+        function initSocket() {
+            if (typeof io === 'undefined') {
+                console.warn('Socket.IO library not loaded yet. Retrying in 1s...');
+                setTimeout(initSocket, 1000);
+                return;
+            }
             try {
                 socket = io('https://drone-ztxx.onrender.com/', {
                     path: '/socket.io',
@@ -683,233 +692,204 @@
                     reconnectionDelay: 1000,
                     timeout: 10000
                 });
+                attachSocketHandlers();
             } catch (e) {
                 console.error('Socket.IO initialization error:', e);
-                updateConnectionStatus(false, 'Socket.IO not available');
             }
+        }
 
-            // Navigation Toggle
-            var navToggle = document.getElementById('navToggle');
-            var navMenu = document.getElementById('navMenu');
+        // ========== DOM ELEMENT REFERENCES ==========
+        // We declare them inside DOMContentLoaded to be safe
+        var statusIndicator, statusText;
+        var droneInterfaceTitle, droneInterfaceDescription;
+        var doctorInterfaceTitle, doctorInterfaceDescription;
 
-            navToggle.addEventListener('click', function() {
-                navMenu.classList.toggle('active');
+        // ========== HELPER FUNCTIONS ==========
+        function updateConnectionStatus(isConnected, message) {
+            if (!statusIndicator || !statusText) return;
+            if (isConnected) {
+                statusIndicator.className = 'status-indicator status-connected';
+                statusText.textContent = message || 'Connected to server';
+            } else {
+                statusIndicator.className = 'status-indicator status-disconnected';
+                statusText.textContent = message || 'Not connected to server';
+            }
+        }
+
+        function resetServiceCards() {
+            if (droneInterfaceTitle) droneInterfaceTitle.textContent = 'Drone Interface';
+            if (droneInterfaceDescription) droneInterfaceDescription.textContent = 'Experience our ambulance drone simulation to understand how it navigates traffic and provides real-time video feed to medical professionals.';
+            if (doctorInterfaceTitle) doctorInterfaceTitle.textContent = 'Doctor Interface';
+            if (doctorInterfaceDescription) doctorInterfaceDescription.textContent = 'Medical professionals can monitor patients in real-time through drone cameras and provide immediate guidance to emergency responders.';
+        }
+
+        function updateUIWithConnection(connection) {
+            if (!droneInterfaceTitle) return;
+            if (connection) {
+                if (connection.role === 'droneOperator') {
+                    droneInterfaceTitle.textContent = connection.operatorName;
+                    droneInterfaceDescription.textContent = 'Operating drone, connected to ' + connection.doctorName + '.';
+                    doctorInterfaceTitle.textContent = connection.doctorName;
+                    doctorInterfaceDescription.textContent = 'Receiving feed from ' + connection.operatorName + "'s drone.";
+                } else if (connection.role === 'doctor') {
+                    doctorInterfaceTitle.textContent = connection.doctorName + ' (Doctor)';
+                    doctorInterfaceDescription.textContent = 'Connected to ' + connection.droneName + '. Monitoring live feed.';
+                    droneInterfaceTitle.textContent = connection.droneName + ' (Drone)';
+                    droneInterfaceDescription.textContent = 'Operated by ' + connection.doctorName + '. Ready for medical assistance.';
+                }
+            } else {
+                resetServiceCards();
+            }
+        }
+
+        function closeAllModals() {
+            var modals = ['registerModal', 'userTypeModal', 'doctorConnectModal', 'droneOperatorConnectModal', 'aboutModal'];
+            modals.forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+        }
+
+        // ========== SOCKET HANDLERS ==========
+        function attachSocketHandlers() {
+            if (!socket) return;
+
+            socket.on('connect', function() {
+                console.log('Connected to server');
+                updateConnectionStatus(true, 'Connected to server');
+                socket.emit('getConnectionStatus');
             });
 
-            // Modal Elements
+            socket.on('disconnect', function() {
+                console.log('Disconnected from server');
+                updateConnectionStatus(false, 'Disconnected from server');
+            });
+
+            socket.on('connect_error', function(error) {
+                console.error('Connection error:', error);
+                updateConnectionStatus(false, 'Connection error. Server may be down.');
+            });
+
+            socket.on('currentConnectionStatus', function(connection) {
+                if (connection) {
+                    localStorage.setItem('currentConnection', JSON.stringify(connection));
+                } else {
+                    localStorage.removeItem('currentConnection');
+                }
+                updateUIWithConnection(connection);
+            });
+
+            socket.on('connectionStatusResponse', function(connection) {
+                if (connection) {
+                    localStorage.setItem('currentConnection', JSON.stringify(connection));
+                } else {
+                    localStorage.removeItem('currentConnection');
+                }
+                updateUIWithConnection(connection);
+            });
+        }
+
+        // ========== MAIN INIT (runs after DOM ready) ==========
+        function initApp() {
+            // Cache DOM elements safely
+            statusIndicator = document.getElementById('statusIndicator');
+            statusText = document.getElementById('statusText');
+            droneInterfaceTitle = document.getElementById('droneInterfaceTitle');
+            droneInterfaceDescription = document.getElementById('droneInterfaceDescription');
+            doctorInterfaceTitle = document.getElementById('doctorInterfaceTitle');
+            doctorInterfaceDescription = document.getElementById('doctorInterfaceDescription');
+
+            // Sanity check
+            if (!statusIndicator || !statusText) {
+                console.error('Critical: statusIndicator or statusText not found in DOM.');
+                return;
+            }
+
+            // ----- Nav toggle -----
+            var navToggle = document.getElementById('navToggle');
+            var navMenu = document.getElementById('navMenu');
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', function() {
+                    navMenu.classList.toggle('active');
+                });
+            }
+
+            // ----- Modal elements -----
             var registerModal = document.getElementById('registerModal');
             var userTypeModal = document.getElementById('userTypeModal');
             var doctorConnectModal = document.getElementById('doctorConnectModal');
             var droneOperatorConnectModal = document.getElementById('droneOperatorConnectModal');
             var aboutModal = document.getElementById('aboutModal');
 
-            // Navigation Links
+            // ----- Nav links -----
             var homeLink = document.getElementById('homeLink');
             var registerLink = document.getElementById('registerLink');
             var registeredUsersLink = document.getElementById('registeredUsersLink');
             var aboutLink = document.getElementById('aboutLink');
 
-            // Close Buttons
-            var closeRegister = document.getElementById('closeRegister');
-            var closeUserType = document.getElementById('closeUserType');
-            var closeDoctorConnect = document.getElementById('closeDoctorConnect');
-            var closeDroneOperatorConnect = document.getElementById('closeDroneOperatorConnect');
-            var closeAbout = document.getElementById('closeAbout');
+            if (homeLink) homeLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (navMenu) navMenu.classList.remove('active');
+                closeAllModals();
+            });
 
-            // Form Switch Links
-            var showLogin = document.getElementById('showLogin');
+            if (registerLink) registerLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (navMenu) navMenu.classList.remove('active');
+                closeAllModals();
+                if (registerModal) registerModal.style.display = 'block';
+                var df = document.getElementById('doctorFields');
+                var of = document.getElementById('operatorFields');
+                var rut = document.getElementById('regUserType');
+                var rf = document.getElementById('registrationForm');
+                if (df) df.style.display = 'none';
+                if (of) of.style.display = 'none';
+                if (rut) rut.value = '';
+                if (rf) rf.reset();
+            });
 
-            // User Type Selection Buttons
+            if (registeredUsersLink) registeredUsersLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (navMenu) navMenu.classList.remove('active');
+                closeAllModals();
+                if (userTypeModal) userTypeModal.style.display = 'block';
+            });
+
+            if (aboutLink) aboutLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (navMenu) navMenu.classList.remove('active');
+                closeAllModals();
+                if (aboutModal) aboutModal.style.display = 'block';
+            });
+
+            // ----- Close buttons -----
+            ['closeRegister', 'closeUserType', 'closeDoctorConnect', 'closeDroneOperatorConnect', 'closeAbout'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.addEventListener('click', closeAllModals);
+            });
+
+            // ----- User type selection -----
             var iamDroneOperatorBtn = document.getElementById('iamDroneOperatorBtn');
             var iamDoctorBtn = document.getElementById('iamDoctorBtn');
 
-            // Doctor Connect Elements
-            var doctorNameSelect = document.getElementById('doctorNameSelect');
-            var droneToConnectSelect = document.getElementById('droneToConnectSelect');
+            if (iamDroneOperatorBtn) iamDroneOperatorBtn.addEventListener('click', function() {
+                if (userTypeModal) userTypeModal.style.display = 'none';
+                if (droneOperatorConnectModal) droneOperatorConnectModal.style.display = 'block';
+            });
+
+            if (iamDoctorBtn) iamDoctorBtn.addEventListener('click', function() {
+                if (userTypeModal) userTypeModal.style.display = 'none';
+                if (doctorConnectModal) doctorConnectModal.style.display = 'block';
+            });
+
+            // ----- Doctor connect -----
             var connectAsDoctorBtn = document.getElementById('connectAsDoctorBtn');
-
-            // Drone Operator Connect Elements
-            var droneOperatorNameSelect = document.getElementById('droneOperatorNameSelect');
-            var doctorToConnectSelect = document.getElementById('doctorToConnectSelect');
-            var connectAsDroneOperatorBtn = document.getElementById('connectAsDroneOperatorBtn');
-
-            // Service Card Elements
-            var droneInterfaceTitle = document.getElementById('droneInterfaceTitle');
-            var droneInterfaceDescription = document.getElementById('droneInterfaceDescription');
-            var doctorInterfaceTitle = document.getElementById('doctorInterfaceTitle');
-            var doctorInterfaceDescription = document.getElementById('doctorInterfaceDescription');
-
-            // Reset Connection Button
-            var resetConnectionBtn = document.getElementById('resetConnectionBtn');
-
-            // Connection Status Elements
-            var connectionStatus = document.getElementById('connectionStatus');
-            var statusIndicator = document.getElementById('statusIndicator');
-            var statusText = document.getElementById('statusText');
-
-            // Function to close all modals
-            function closeAllModals() {
-                registerModal.style.display = 'none';
-                userTypeModal.style.display = 'none';
-                doctorConnectModal.style.display = 'none';
-                droneOperatorConnectModal.style.display = 'none';
-                aboutModal.style.display = 'none';
-            }
-
-            // Reset service cards to default state
-            function resetServiceCards() {
-                droneInterfaceTitle.textContent = 'Drone Interface';
-                droneInterfaceDescription.textContent = 'Experience our ambulance drone simulation to understand how it navigates traffic and provides real-time video feed to medical professionals.';
-                doctorInterfaceTitle.textContent = 'Doctor Interface';
-                doctorInterfaceDescription.textContent = 'Medical professionals can monitor patients in real-time through drone cameras and provide immediate guidance to emergency responders.';
-            }
-
-            // Update UI based on connection status
-            function updateUIWithConnection(connection) {
-                if (connection) {
-                    if (connection.role === 'droneOperator') {
-                        droneInterfaceTitle.textContent = connection.operatorName;
-                        droneInterfaceDescription.textContent = 'Operating drone, connected to ' + connection.doctorName + '.';
-                        doctorInterfaceTitle.textContent = connection.doctorName;
-                        doctorInterfaceDescription.textContent = 'Receiving feed from ' + connection.operatorName + "'s drone.";
-                    } else if (connection.role === 'doctor') {
-                        doctorInterfaceTitle.textContent = connection.doctorName + ' (Doctor)';
-                        doctorInterfaceDescription.textContent = 'Connected to ' + connection.droneName + '. Monitoring live feed.';
-                        droneInterfaceTitle.textContent = connection.droneName + ' (Drone)';
-                        droneInterfaceDescription.textContent = 'Operated by ' + connection.doctorName + '. Ready for medical assistance.';
-                    }
-                } else {
-                    resetServiceCards();
-                }
-            }
-
-            // Update connection status display
-            function updateConnectionStatus(isConnected, message) {
-                if (isConnected) {
-                    statusIndicator.className = 'status-indicator status-connected';
-                    statusText.textContent = message || 'Connected to server';
-                } else {
-                    statusIndicator.className = 'status-indicator status-disconnected';
-                    statusText.textContent = message || 'Not connected to server';
-                }
-            }
-
-            // Socket.IO event handlers (only if socket exists)
-            if (socket) {
-                socket.on('connect', function() {
-                    console.log('Connected to server');
-                    updateConnectionStatus(true, 'Connected to server');
-                    socket.emit('getConnectionStatus');
-                });
-
-                socket.on('disconnect', function() {
-                    console.log('Disconnected from server');
-                    updateConnectionStatus(false, 'Disconnected from server');
-                });
-
-                socket.on('connect_error', function(error) {
-                    console.error('Connection error:', error);
-                    updateConnectionStatus(false, 'Connection error. Server may be down.');
-                });
-
-                socket.on('currentConnectionStatus', function(connection) {
-                    console.log('Received connection status:', connection);
-                    if (connection) {
-                        localStorage.setItem('currentConnection', JSON.stringify(connection));
-                    } else {
-                        localStorage.removeItem('currentConnection');
-                    }
-                    updateUIWithConnection(connection);
-                });
-
-                socket.on('connectionStatusResponse', function(connection) {
-                    console.log('Connection status response:', connection);
-                    if (connection) {
-                        localStorage.setItem('currentConnection', JSON.stringify(connection));
-                    } else {
-                        localStorage.removeItem('currentConnection');
-                    }
-                    updateUIWithConnection(connection);
-                });
-            } else {
-                updateConnectionStatus(false, 'Socket.IO not loaded. Check your internet connection.');
-            }
-
-            // Initial UI setup
-            var initialConnection = JSON.parse(localStorage.getItem('currentConnection'));
-            updateUIWithConnection(initialConnection);
-            
-            if (socket && socket.connected) {
-                updateConnectionStatus(true, 'Connected to server');
-                socket.emit('getConnectionStatus');
-            } else if (socket) {
-                updateConnectionStatus(false, 'Connecting to server...');
-            }
-
-            // Navigation Link Event Listeners
-            homeLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                navMenu.classList.remove('active');
-                closeAllModals();
-            });
-
-            registerLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                navMenu.classList.remove('active');
-                closeAllModals();
-                registerModal.style.display = 'block';
-                document.getElementById('doctorFields').style.display = 'none';
-                document.getElementById('operatorFields').style.display = 'none';
-                document.getElementById('regUserType').value = '';
-                document.getElementById('registrationForm').reset();
-            });
-
-            registeredUsersLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                navMenu.classList.remove('active');
-                closeAllModals();
-                userTypeModal.style.display = 'block';
-            });
-
-            aboutLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                navMenu.classList.remove('active');
-                closeAllModals();
-                aboutModal.style.display = 'block';
-            });
-
-            // Close Buttons
-            closeRegister.addEventListener('click', closeAllModals);
-            closeUserType.addEventListener('click', closeAllModals);
-            closeDoctorConnect.addEventListener('click', closeAllModals);
-            closeDroneOperatorConnect.addEventListener('click', closeAllModals);
-            closeAbout.addEventListener('click', closeAllModals);
-
-            // User Type Selection Buttons
-            iamDroneOperatorBtn.addEventListener('click', function() {
-                userTypeModal.style.display = 'none';
-                droneOperatorConnectModal.style.display = 'block';
-            });
-
-            iamDoctorBtn.addEventListener('click', function() {
-                userTypeModal.style.display = 'none';
-                doctorConnectModal.style.display = 'block';
-            });
-
-            // Doctor Connect Button Event Listener
-            connectAsDoctorBtn.addEventListener('click', function() {
-                var doctorName = doctorNameSelect.value;
-                var selectedDrone = droneToConnectSelect.value;
-
+            if (connectAsDoctorBtn) connectAsDoctorBtn.addEventListener('click', function() {
+                var doctorName = document.getElementById('doctorNameSelect').value;
+                var selectedDrone = document.getElementById('droneToConnectSelect').value;
                 if (doctorName && selectedDrone) {
-                    var connectionData = {
-                        role: 'doctor',
-                        doctorName: doctorName,
-                        droneName: selectedDrone
-                    };
-                    if (socket) {
-                        socket.emit('updateConnection', connectionData);
-                    }
+                    var connectionData = { role: 'doctor', doctorName: doctorName, droneName: selectedDrone };
+                    if (socket) socket.emit('updateConnection', connectionData);
                     alert('Doctor ' + doctorName + ' connected to Drone ' + selectedDrone + '!');
                     closeAllModals();
                 } else {
@@ -917,20 +897,14 @@
                 }
             });
 
-            // Drone Operator Connect Button Event Listener
-            connectAsDroneOperatorBtn.addEventListener('click', function() {
-                var operatorName = droneOperatorNameSelect.value;
-                var selectedDoctor = doctorToConnectSelect.value;
-
+            // ----- Drone operator connect -----
+            var connectAsDroneOperatorBtn = document.getElementById('connectAsDroneOperatorBtn');
+            if (connectAsDroneOperatorBtn) connectAsDroneOperatorBtn.addEventListener('click', function() {
+                var operatorName = document.getElementById('droneOperatorNameSelect').value;
+                var selectedDoctor = document.getElementById('doctorToConnectSelect').value;
                 if (operatorName && selectedDoctor) {
-                    var connectionData = {
-                        role: 'droneOperator',
-                        operatorName: operatorName,
-                        doctorName: selectedDoctor
-                    };
-                    if (socket) {
-                        socket.emit('updateConnection', connectionData);
-                    }
+                    var connectionData = { role: 'droneOperator', operatorName: operatorName, doctorName: selectedDoctor };
+                    if (socket) socket.emit('updateConnection', connectionData);
                     alert('Drone Operator ' + operatorName + ' connected to Doctor ' + selectedDoctor + '!');
                     closeAllModals();
                 } else {
@@ -938,86 +912,65 @@
                 }
             });
 
-            // Reset Connection Button Event Listener
-            resetConnectionBtn.addEventListener('click', function() {
-                if (socket) {
-                    socket.emit('resetConnection');
-                }
+            // ----- Reset connection -----
+            var resetConnectionBtn = document.getElementById('resetConnectionBtn');
+            if (resetConnectionBtn) resetConnectionBtn.addEventListener('click', function() {
+                if (socket) socket.emit('resetConnection');
                 localStorage.removeItem('currentConnection');
                 resetServiceCards();
                 alert('Connection reset. You can now establish a new connection.');
             });
 
-            // Close modal when clicking outside
+            // ----- Click outside modal to close -----
             window.addEventListener('click', function(e) {
-                if (e.target === registerModal || e.target === userTypeModal || 
-                    e.target === doctorConnectModal || e.target === droneOperatorConnectModal || 
+                if (e.target === registerModal || e.target === userTypeModal ||
+                    e.target === doctorConnectModal || e.target === droneOperatorConnectModal ||
                     e.target === aboutModal) {
                     e.target.style.display = 'none';
                 }
             });
 
-            // Service Card Links - FIXED: attach to buttons inside cards
-            document.getElementById('droneInterfaceBtn').addEventListener('click', function(e) {
+            // ----- Service card buttons (FIXED) -----
+            var droneBtn = document.getElementById('droneInterfaceBtn');
+            var doctorBtn = document.getElementById('doctorInterfaceBtn');
+
+            if (droneBtn) droneBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 window.location.href = 'drone.html';
             });
 
-            document.getElementById('doctorInterfaceBtn').addEventListener('click', function(e) {
+            if (doctorBtn) doctorBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 window.location.href = 'doctor.html';
             });
 
-            // Also allow clicking the card itself to navigate
-            document.getElementById('droneSimulator').addEventListener('click', function() {
-                window.location.href = 'drone.html';
-            });
+            // Also make the card clickable
+            var droneCard = document.getElementById('droneSimulator');
+            var doctorCard = document.getElementById('doctorInterface');
+            if (droneCard) droneCard.addEventListener('click', function() { window.location.href = 'drone.html'; });
+            if (doctorCard) doctorCard.addEventListener('click', function() { window.location.href = 'doctor.html'; });
 
-            document.getElementById('doctorInterface').addEventListener('click', function() {
-                window.location.href = 'doctor.html';
-            });
-
-            // Registration form conditional fields
+            // ----- Registration conditional fields -----
             var regUserTypeSelect = document.getElementById('regUserType');
             var doctorFields = document.getElementById('doctorFields');
             var operatorFields = document.getElementById('operatorFields');
 
-            regUserTypeSelect.addEventListener('change', function() {
+            if (regUserTypeSelect) regUserTypeSelect.addEventListener('change', function() {
                 if (regUserTypeSelect.value === 'doctor') {
                     doctorFields.style.display = 'block';
                     operatorFields.style.display = 'none';
-                    document.getElementById('regSpecialization').setAttribute('required', 'required');
-                    document.getElementById('regLicense').setAttribute('required', 'required');
-                    document.getElementById('regClinic').setAttribute('required', 'required');
-                    document.getElementById('regCity').removeAttribute('required');
-                    document.getElementById('regVillage').removeAttribute('required');
-                    document.getElementById('regState').removeAttribute('required');
-                    document.getElementById('regCountry').removeAttribute('required');
                 } else if (regUserTypeSelect.value === 'drone_operator') {
                     doctorFields.style.display = 'none';
                     operatorFields.style.display = 'block';
-                    document.getElementById('regCity').setAttribute('required', 'required');
-                    document.getElementById('regVillage').setAttribute('required', 'required');
-                    document.getElementById('regState').setAttribute('required', 'required');
-                    document.getElementById('regCountry').setAttribute('required', 'required');
-                    document.getElementById('regSpecialization').removeAttribute('required');
-                    document.getElementById('regLicense').removeAttribute('required');
-                    document.getElementById('regClinic').removeAttribute('required');
                 } else {
                     doctorFields.style.display = 'none';
                     operatorFields.style.display = 'none';
-                    document.getElementById('regSpecialization').removeAttribute('required');
-                    document.getElementById('regLicense').removeAttribute('required');
-                    document.getElementById('regClinic').removeAttribute('required');
-                    document.getElementById('regCity').removeAttribute('required');
-                    document.getElementById('regVillage').removeAttribute('required');
-                    document.getElementById('regState').removeAttribute('required');
-                    document.getElementById('regCountry').removeAttribute('required');
                 }
             });
 
-            // Registration form submission
-            document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            // ----- Registration submit -----
+            var registrationForm = document.getElementById('registrationForm');
+            if (registrationForm) registrationForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 var regName = document.getElementById('regName').value;
                 var regUserId = document.getElementById('regUserId').value;
@@ -1026,7 +979,6 @@
                 var regUserType = document.getElementById('regUserType').value;
                 var regPassword = document.getElementById('regPassword').value;
                 var regConfirmPassword = document.getElementById('regConfirmPassword').value;
-                var regSpecialization = document.getElementById('regSpecialization').value;
 
                 if (regPassword !== regConfirmPassword) {
                     alert('Passwords do not match!');
@@ -1035,35 +987,21 @@
 
                 var registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
                 var userExists = registeredUsers.some(function(user) { return user.userId === regUserId; });
-                
                 if (userExists) {
                     alert('User ID already taken. Please choose a different one.');
                     return;
                 }
 
                 var newUser = {
-                    name: regName,
-                    userId: regUserId,
-                    email: regEmail,
-                    phone: regPhone,
-                    userType: regUserType,
-                    password: regPassword,
-                    skills: [],
-                    workDetails: '',
-                    metrics: {
-                        assignedCases: 0,
-                        completedTasks: 0,
-                        responseTime: 0,
-                        successRate: 100
-                    }
+                    name: regName, userId: regUserId, email: regEmail, phone: regPhone,
+                    userType: regUserType, password: regPassword,
+                    metrics: { assignedCases: 0, completedTasks: 0, responseTime: 0, successRate: 100 }
                 };
 
                 if (regUserType === 'doctor') {
-                    newUser.specialization = regSpecialization;
+                    newUser.specialization = document.getElementById('regSpecialization').value;
                     newUser.license = document.getElementById('regLicense').value;
                     newUser.clinic = document.getElementById('regClinic').value;
-                    newUser.metrics.onlineConsultations = 0;
-                    newUser.metrics.emergencyResponses = 0;
                 } else if (regUserType === 'drone_operator') {
                     newUser.city = document.getElementById('regCity').value;
                     newUser.village = document.getElementById('regVillage').value;
@@ -1074,19 +1012,39 @@
                 registeredUsers.push(newUser);
                 localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
 
-                alert('Registration successful! Your User ID is: ' + regUserId + '. You can now login.');
-                registerModal.style.display = 'none';
-                userTypeModal.style.display = 'block';
-                document.getElementById('registrationForm').reset();
+                alert('Registration successful! Your User ID is: ' + regUserId);
+                if (registerModal) registerModal.style.display = 'none';
+                if (userTypeModal) userTypeModal.style.display = 'block';
+                registrationForm.reset();
             });
 
-            // Periodically check connection status
+            // ----- Initial UI state -----
+            var initialConnection = null;
+            try {
+                initialConnection = JSON.parse(localStorage.getItem('currentConnection'));
+            } catch (err) {
+                initialConnection = null;
+            }
+            updateUIWithConnection(initialConnection);
+
+            // ----- Kick off Socket.IO -----
+            initSocket();
+
+            // ----- Periodic reconnect check -----
             setInterval(function() {
                 if (socket && !socket.connected) {
                     socket.connect();
                 }
             }, 5000);
-        });
+        }
+
+        // Run initApp when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+    })();
     </script>
 </body>
 </html>
