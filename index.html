@@ -665,10 +665,13 @@
         </div>
     </div>
 
-    <!-- Socket.IO loaded with defer -->
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" defer></script>
-    
-    <!-- Main script wrapped in DOMContentLoaded -->
+    <!-- =========================================================
+         SOCKET.IO: loaded from OUR OWN server (NOT a CDN)
+         This is served automatically by server.js at /socket.io/socket.io.js
+         ========================================================= -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- Main application script -->
     <script>
     (function() {
         'use strict';
@@ -678,14 +681,15 @@
 
         function initSocket() {
             if (typeof io === 'undefined') {
-                console.warn('Socket.IO library not loaded yet. Retrying in 1s...');
+                console.warn('Socket.IO library not loaded. Retrying in 1s...');
                 setTimeout(initSocket, 1000);
                 return;
             }
             try {
-                // UPDATED: Pointing to your new Render URL
-                socket = io('https://ambulancepatroldrone.onrender.com', {
-                    transports: ['polling', 'websocket'], // Try polling first for Render free tier
+                // Connect to the same origin (our Render server)
+                // Using window.location.origin means it works for both localhost AND Render
+                socket = io(window.location.origin, {
+                    transports: ['polling', 'websocket'],
                     secure: true,
                     reconnection: true,
                     reconnectionAttempts: 10,
@@ -754,13 +758,13 @@
             if (!socket) return;
 
             socket.on('connect', function() {
-                console.log('Connected to server');
+                console.log('✅ Connected to server via Socket.IO');
                 updateConnectionStatus(true, 'Connected to server');
                 socket.emit('getConnectionStatus');
             });
 
             socket.on('disconnect', function() {
-                console.log('Disconnected from server');
+                console.log('❌ Disconnected from server');
                 updateConnectionStatus(false, 'Disconnected from server');
             });
 
@@ -790,7 +794,6 @@
 
         // ========== MAIN INIT ==========
         function initApp() {
-            // Cache DOM elements
             statusIndicator = document.getElementById('statusIndicator');
             statusText = document.getElementById('statusText');
             droneInterfaceTitle = document.getElementById('droneInterfaceTitle');
@@ -887,12 +890,10 @@
                 var selectedDrone = document.getElementById('droneToConnectSelect').value;
                 if (doctorName && selectedDrone) {
                     var connectionData = { role: 'doctor', doctorName: doctorName, droneName: selectedDrone };
-                    // Save to localStorage immediately
                     localStorage.setItem('currentConnection', JSON.stringify(connectionData));
                     if (socket) socket.emit('updateConnection', connectionData);
                     alert('Doctor ' + doctorName + ' connected to Drone ' + selectedDrone + '!');
                     closeAllModals();
-                    // Update UI locally just in case socket is slow
                     updateUIWithConnection(connectionData);
                 } else {
                     alert('Please select your name and a drone to connect to.');
@@ -906,12 +907,10 @@
                 var selectedDoctor = document.getElementById('doctorToConnectSelect').value;
                 if (operatorName && selectedDoctor) {
                     var connectionData = { role: 'droneOperator', operatorName: operatorName, doctorName: selectedDoctor };
-                    // Save to localStorage immediately
                     localStorage.setItem('currentConnection', JSON.stringify(connectionData));
                     if (socket) socket.emit('updateConnection', connectionData);
                     alert('Drone Operator ' + operatorName + ' connected to Doctor ' + selectedDoctor + '!');
                     closeAllModals();
-                    // Update UI locally just in case socket is slow
                     updateUIWithConnection(connectionData);
                 } else {
                     alert('Please select your name and a doctor to connect to.');
@@ -936,41 +935,37 @@
                 }
             });
 
-            // ----- Service card buttons (UPDATED: Requires Connection) -----
+            // ----- Service card buttons (REQUIRES CONNECTION) -----
             var droneBtn = document.getElementById('droneInterfaceBtn');
             var doctorBtn = document.getElementById('doctorInterfaceBtn');
             var droneCard = document.getElementById('droneSimulator');
             var doctorCard = document.getElementById('doctorInterface');
 
-            // Helper function to safely navigate only if connected
             function attemptNavigation(targetUrl) {
                 var storedConnection = null;
                 try {
                     storedConnection = JSON.parse(localStorage.getItem('currentConnection'));
                 } catch(e) { console.error(e); }
 
-                // Check if a valid connection exists
                 if (storedConnection && (storedConnection.doctorName || storedConnection.operatorName)) {
                     window.location.href = targetUrl;
                 } else {
                     alert("Access Denied: Please register/login and connect to a Doctor or Drone first.");
-                    // Open the user type selection modal automatically
                     closeAllModals();
                     if (userTypeModal) userTypeModal.style.display = 'block';
                 }
             }
 
             if (droneBtn) droneBtn.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent the card click from firing
+                e.stopPropagation();
                 attemptNavigation('drone.html');
             });
 
             if (doctorBtn) doctorBtn.addEventListener('click', function(e) {
-                e.stopPropagation(); // Prevent the card click from firing
+                e.stopPropagation();
                 attemptNavigation('doctor.html');
             });
 
-            // Card click handlers
             if (droneCard) droneCard.addEventListener('click', function() { 
                 attemptNavigation('drone.html'); 
             });
@@ -1061,6 +1056,7 @@
             // ----- Periodic reconnect check -----
             setInterval(function() {
                 if (socket && !socket.connected) {
+                    console.log('Reconnecting to server...');
                     socket.connect();
                 }
             }, 5000);
