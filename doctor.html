@@ -534,12 +534,10 @@
                     maxUsers: 2,
                     layout: "Auto",
                     showLayoutButton: false,
-                });
-
-                zp.on('roomStateChanged', function(state) {
-                    if (state === 'CONNECTED') {
+                    onJoinRoom: function() {
                         addLogEntry('Successfully connected to emergency video call.', 'success');
-                    } else if (state === 'DISCONNECTED') {
+                    },
+                    onLeaveRoom: function() {
                         addLogEntry('Video call ended.', 'info');
                     }
                 });
