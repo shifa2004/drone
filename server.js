@@ -14,8 +14,8 @@ let currentActiveConnection = null;
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://ambulancepatroldrone.onrender.com", // Your Render URL
-            "https://testfile6.onrender.com",            // Old Render URL
+            "https://ambulancepatroldrone.onrender.com",
+            "https://testfile6.onrender.com",
             "http://localhost:3000",
             "http://localhost:8080",
             "http://localhost:8003",
@@ -55,6 +55,7 @@ io.on('connection', (socket) => {
         socket.emit('currentConnectionStatus', null);
     }
 
+    // Handle room joining (kept for compatibility)
     socket.on('join', (room) => {
         socket.join(room);
         console.log(`${socket.id} joined room: ${room}`);
@@ -74,8 +75,13 @@ io.on('connection', (socket) => {
         io.emit('currentConnectionStatus', null);
     });
 
-    // GPS Data Sync
+    // ===== GPS DATA RELAY (KEY FIX) =====
+    // When drone.html emits GPS data, broadcast it to ALL other clients
+    // (doctor.html) so their maps follow the drone map in real time.
     socket.on('updateDroneData', (data) => {
+        // Broadcast to every connected client EXCEPT the sender
+        socket.broadcast.emit('droneData', data);
+        // Also send to room '108' for backward compatibility
         socket.to('108').emit('droneData', data);
     });
 
