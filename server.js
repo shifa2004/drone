@@ -7,32 +7,25 @@ const path = require('path');
 const app = express();
 const server = http.createServer(app);
 
-// Get the network IP for multi-device access
-const os = require('os');
-const interfaces = os.networkInterfaces();
-let networkIP = 'localhost';
+// --- Centralized Connection State ---
+let currentActiveConnection = null; 
 
-for (const interfaceName in interfaces) {
-  for (const iface of interfaces[interfaceName]) {
-    if (iface.family === 'IPv4' && !iface.internal) {
-      networkIP = iface.address;
-      break;
-    }
-  }
-}
-
+// Configure Socket.IO with CORS for your specific URLs
 const io = new Server(server, {
     cors: {
-        origin: ["https://testfile6.onrender.com", "http://localhost:3000", "http://localhost:8080","https://drone-ztxx.onrender.com/"],
-        // Allow all origins for multi-device testing
+        origin: [
+            "https://ambulancepatroldrone.onrender.com", // Your NEW Render URL
+            "https://testfile6.onrender.com",            // Your OLD Render URL (keep just in case)
+            "http://localhost:3000", 
+            "http://localhost:8080",
+            "http://localhost:5500",
+            "http://127.0.0.1:5500"
+        ],
         methods: ["GET", "POST"],
         credentials: true,
         allowedHeaders: ["Content-Type", "Authorization"]
     }
 });
-
-// --- Centralized Connection State ---
-let currentActiveConnection = null; // Stores the active drone-doctor connection
 
 // Serve static files
 app.use(express.static(__dirname));
@@ -52,7 +45,7 @@ app.get('/doctor.html', (req, res) => {
 
 // Socket.io events
 io.on('connection', (socket) => {
-    console.log(`User connected: ${socket.id} from ${socket.handshake.address}`);
+    console.log(`User connected: ${socket.id}`);
 
     // Send current active connection to newly connected client
     if (currentActiveConnection) {
@@ -64,7 +57,7 @@ io.on('connection', (socket) => {
         console.log(`${socket.id} joined room: ${room}`);
     });
 
-    // --- Handle Connection Updates from Clients ---
+    // Handle Connection Updates from Clients
     socket.on('updateConnection', (connectionData) => {
         currentActiveConnection = connectionData;
         console.log('Updated active connection:', currentActiveConnection);
@@ -72,7 +65,7 @@ io.on('connection', (socket) => {
         io.emit('currentConnectionStatus', currentActiveConnection);
     });
 
-    // --- Handle Connection Reset from Clients ---
+    // Handle Connection Reset from Clients
     socket.on('resetConnection', () => {
         currentActiveConnection = null;
         console.log('Connection reset by a client.');
@@ -80,7 +73,7 @@ io.on('connection', (socket) => {
         io.emit('currentConnectionStatus', null);
     });
 
-    // --- GPS Data Sync ---
+    // GPS Data Sync
     socket.on('updateDroneData', (data) => {
         socket.to('108').emit('droneData', data);
     });
@@ -90,11 +83,13 @@ io.on('connection', (socket) => {
     });
 });
 
+// Render provides the PORT dynamically. Fallback to 8003 for local testing.
 const PORT = process.env.PORT || 8003;
-// Listen on all network interfaces (0.0.0.0) to be accessible from other devices
+
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port: ${PORT}`);
-    console.log(`Drone interface: https://testfile6.onrender.com/drone.html`);
-    console.log(`Doctor interface: https://testfile6.onrender.com/doctor.html`);
-    console.log(`Main interface: https://testfile6.onrender.com/`);
+    // Updated URLs to match your new deployment
+    console.log(`Main interface: https://ambulancepatroldrone.onrender.com/`);
+    console.log(`Drone interface: https://ambulancepatroldrone.onrender.com/drone.html`);
+    console.log(`Doctor interface: https://ambulancepatroldrone.onrender.com/doctor.html`);
 });
