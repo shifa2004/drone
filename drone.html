@@ -33,11 +33,6 @@
             --iiit-gold: #d4af37;
         }
         
-        html, body {
-            height: 100%;
-            width: 100%;
-        }
-        
         body {
             background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
             color: var(--light);
@@ -76,20 +71,14 @@
         header::before {
             content: "";
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: radial-gradient(circle at 10% 20%, rgba(230, 57, 70, 0.2) 0%, transparent 40%),
                         radial-gradient(circle at 90% 80%, rgba(168, 218, 220, 0.2) 0%, transparent 40%);
             pointer-events: none;
         }
         
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+        .logo { display: flex; align-items: center; gap: 15px; }
         
         .logo-icon {
             font-size: 2.5rem;
@@ -97,11 +86,7 @@
             animation: pulse 2s infinite;
         }
         
-        .logo-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.2;
-        }
+        .logo-text { display: flex; flex-direction: column; line-height: 1.2; }
         
         .logo-line-1 {
             font-size: 1.5rem;
@@ -128,11 +113,7 @@
             letter-spacing: 0.5px;
         }
         
-        .header-controls {
-            margin-left: auto;
-            display: flex;
-            gap: 15px;
-        }
+        .header-controls { margin-left: auto; display: flex; gap: 15px; }
         
         .simulation-time {
             background: rgba(13, 27, 42, 0.7);
@@ -145,9 +126,7 @@
             border: 1px solid var(--accent);
         }
         
-        .time-icon {
-            color: var(--accent);
-        }
+        .time-icon { color: var(--accent); }
         
         .sidebar {
             grid-area: sidebar;
@@ -160,6 +139,7 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(168, 218, 220, 0.3);
             z-index: 10;
+            overflow-y: auto;
         }
         
         .control-panel {
@@ -178,26 +158,11 @@
             font-weight: 600;
         }
         
-        .panel-icon {
-            font-size: 1.4rem;
-        }
+        .panel-icon { font-size: 1.4rem; }
+        .control-group { margin-bottom: 15px; }
+        .control-label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--light); }
         
-        .control-group {
-            margin-bottom: 15px;
-        }
-        
-        .control-label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-            color: var(--light);
-        }
-        
-        .slider-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .slider-container { display: flex; align-items: center; gap: 10px; }
         
         .slider {
             flex: 1;
@@ -210,12 +175,10 @@
         
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 20px; height: 20px;
             border-radius: 50%;
             background: var(--accent);
             cursor: pointer;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
         }
         
         .value-display {
@@ -227,12 +190,7 @@
             font-size: 0.9rem;
         }
         
-        .btn-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-        }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         
         .btn {
             padding: 10px;
@@ -253,18 +211,11 @@
         .btn-warning { background: var(--warning); color: var(--dark); }
         .btn-danger { background: var(--danger); color: white; }
         
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-        
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); }
         .btn:active { transform: translateY(0); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
-        .status-indicators {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+        .status-indicators { display: flex; flex-direction: column; gap: 15px; }
         
         .status-item {
             display: flex;
@@ -275,12 +226,7 @@
             border-left: 4px solid var(--accent);
         }
         
-        .status-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
+        .status-label { display: flex; align-items: center; gap: 8px; }
         .status-value { font-weight: 600; }
         .status-good { color: var(--success); }
         .status-warning { color: var(--warning); }
@@ -294,37 +240,27 @@
             position: relative;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(168, 218, 220, 0.3);
-            /* CRITICAL: ensure the map has a size */
-            min-height: 400px;
-            min-width: 300px;
         }
         
         #map {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             z-index: 1;
-            /* CRITICAL: fallback background so we can see if it renders */
-            background: #1a1a2e;
         }
         
         .map-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(13, 27, 42, 0.15);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(13, 27, 42, 0.3);
             z-index: 2;
             pointer-events: none;
         }
         
         .map-controls {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 20px; right: 20px;
             z-index: 10;
             display: flex;
             flex-direction: column;
@@ -350,13 +286,10 @@
         
         .video-call-container {
             position: fixed;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 480px;
-            height: 340px;
-            max-width: 90vw;
-            max-height: 90vh;
+            width: 480px; height: 340px;
+            max-width: 90vw; max-height: 90vh;
             background-color: rgba(0, 0, 0, 0.85);
             border: 2px solid var(--accent);
             border-radius: 12px;
@@ -364,6 +297,8 @@
             box-shadow: 0 0 15px rgba(0,0,0,0.6);
             overflow: hidden;
             color: white;
+            font-family: Arial, sans-serif;
+            cursor: grab;
             display: flex;
             flex-direction: column;
             min-width: 300px;
@@ -399,10 +334,8 @@
         }
         
         .status-indicator {
-            width: 10px;
-            height: 10px;
-            background: red;
-            border-radius: 50%;
+            width: 10px; height: 10px;
+            background: red; border-radius: 50%;
         }
         
         .video-call-content {
@@ -416,10 +349,8 @@
 
         .video-call-resize-handle {
             position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 20px;
-            height: 20px;
+            bottom: 0; right: 0;
+            width: 20px; height: 20px;
             background: var(--accent);
             border-top-left-radius: 5px;
             cursor: nwse-resize;
@@ -429,8 +360,7 @@
         
         .gps-indicator {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 20px; left: 20px;
             z-index: 100;
             background: rgba(29, 53, 87, 0.7);
             padding: 10px 15px;
@@ -467,14 +397,10 @@
         
         .ambulance-marker {
             background: var(--primary);
-            width: 40px;
-            height: 40px;
+            width: 40px; height: 40px;
             border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 20px;
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-size: 20px;
             box-shadow: 0 0 15px rgba(230, 57, 70, 0.7);
             position: relative;
             overflow: hidden;
@@ -484,10 +410,8 @@
         
         .siren {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 8px;
-            height: 8px;
+            top: 5px; right: 5px;
+            width: 8px; height: 8px;
             background: blue;
             border-radius: 50%;
             animation: siren 1s infinite;
@@ -496,14 +420,10 @@
         
         .hospital-marker {
             background: var(--hospital);
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 24px;
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-size: 24px;
             box-shadow: 0 0 15px rgba(142, 202, 230, 0.7);
             border: 2px solid white;
             z-index: 1000;
@@ -511,32 +431,22 @@
         
         .drone-marker {
             background: #28e4bb;
-            width: 30px;
-            height: 30px;
+            width: 30px; height: 30px;
             border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; justify-content: center; align-items: center;
             color: white;
             box-shadow: 0 0 10px rgba(168, 218, 220, 0.8);
             border: 2px solid white;
             z-index: 1001;
         }
         
-        .drone-icon {
-            font-size: 20px;
-            color: rgb(212, 40, 40);
-        }
+        .drone-icon { font-size: 20px; color: rgb(212, 40, 40); }
         
-        .leaflet-div-icon {
-            background: transparent !important;
-            border: none !important;
-        }
+        .leaflet-div-icon { background: transparent !important; border: none !important; }
         
         .map-legend {
             position: absolute;
-            bottom: 240px;
-            right: 20px;
+            bottom: 240px; right: 20px;
             background: rgba(29, 53, 87, 0.85);
             padding: 15px;
             border-radius: 10px;
@@ -563,8 +473,7 @@
         }
         
         .legend-color {
-            width: 20px;
-            height: 20px;
+            width: 20px; height: 20px;
             border-radius: 50%;
             margin-right: 10px;
             border: 2px solid white;
@@ -577,27 +486,20 @@
         
         .drone-guidance {
             position: absolute;
-            width: 30px;
-            height: 30px;
+            width: 30px; height: 30px;
             background: rgba(168, 218, 220, 0.8);
             border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; justify-content: center; align-items: center;
             z-index: 1002;
             pointer-events: none;
             box-shadow: 0 0 15px rgba(168, 218, 220, 0.7);
         }
         
-        .drone-guidance i {
-            color: var(--secondary);
-            font-size: 16px;
-        }
+        .drone-guidance i { color: var(--secondary); font-size: 16px; }
         
         .developer-info {
             position: absolute;
-            bottom: 20px;
-            left: 20px;
+            bottom: 20px; left: 20px;
             background: rgba(29, 53, 87, 0.85);
             padding: 15px;
             border-radius: 10px;
@@ -617,16 +519,11 @@
             gap: 8px;
         }
         
-        .developer-names {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
+        .developer-names { display: flex; flex-direction: column; gap: 5px; }
         
         .iiit-logo {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 20px; right: 20px;
             z-index: 1000;
             font-size: 2.5rem;
             color: var(--iiit-gold);
@@ -644,13 +541,7 @@
         }
         
         .leaflet-routing-alt { max-height: 150px; overflow-y: auto; }
-        
-        .leaflet-routing-alt h3 {
-            font-size: 1rem;
-            color: var(--accent);
-            margin-bottom: 5px;
-        }
-        
+        .leaflet-routing-alt h3 { font-size: 1rem; color: var(--accent); margin-bottom: 5px; }
         .leaflet-routing-alt table { width: 100%; font-size: 0.9rem; }
         .leaflet-routing-alt tr:hover { background: rgba(168, 218, 220, 0.2); }
         
@@ -728,13 +619,7 @@
         }
         
         .log-entry { margin-bottom: 5px; }
-        
-        .log-timestamp {
-            color: var(--accent);
-            margin-right: 10px;
-            font-weight: 600;
-        }
-        
+        .log-timestamp { color: var(--accent); margin-right: 10px; font-weight: 600; }
         .log-info { color: var(--light); }
         .log-success { color: var(--success); }
         .log-alert { color: var(--danger); }
@@ -755,28 +640,13 @@
             border: 1px solid rgba(168, 218, 220, 0.3);
         }
         
-        .metric-card i {
-            font-size: 1.5rem;
-            color: var(--accent);
-            margin-bottom: 10px;
-        }
-        
-        .metric-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--light);
-        }
-        
-        .metric-label {
-            font-size: 0.9rem;
-            color: var(--accent);
-        }
+        .metric-card i { font-size: 1.5rem; color: var(--accent); margin-bottom: 10px; }
+        .metric-value { font-size: 1.8rem; font-weight: 700; margin-bottom: 5px; color: var(--light); }
+        .metric-label { font-size: 0.9rem; color: var(--accent); }
         
         .hospital-info {
             position: absolute;
-            top: 120px;
-            right: 20px;
+            top: 120px; right: 20px;
             background: rgba(29, 53, 87, 0.85);
             padding: 15px;
             border-radius: 10px;
@@ -958,22 +828,10 @@
 </div>
 <div class="map-legend">
 <div class="legend-title"><i class="fas fa-map"></i> Map Legend</div>
-<div class="legend-item">
-<div class="legend-color legend-ambulance"></div>
-<div>Ambulance</div>
-</div>
-<div class="legend-item">
-<div class="legend-color legend-hospital"></div>
-<div>Hospital</div>
-</div>
-<div class="legend-item">
-<div class="legend-color legend-drone"></div>
-<div>Drone</div>
-</div>
-<div class="legend-item">
-<div class="legend-color legend-route"></div>
-<div>Road Route</div>
-</div>
+<div class="legend-item"><div class="legend-color legend-ambulance"></div><div>Ambulance</div></div>
+<div class="legend-item"><div class="legend-color legend-hospital"></div><div>Hospital</div></div>
+<div class="legend-item"><div class="legend-color legend-drone"></div><div>Drone</div></div>
+<div class="legend-item"><div class="legend-color legend-route"></div><div>Road Route</div></div>
 </div>
 
 <div class="video-call-container" id="video-call-container" style="display: none;">
@@ -1089,52 +947,27 @@
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
 <script>
-(function() {
-    'use strict';
-
-    // ========== GLOBAL STATE ==========
-    var map = null;
-    var ambulanceMarker = null, hospitalMarker = null, droneMarker = null;
-    var isSimulationActive = false;
-    var currentPathIndex = 0;
-    var routeWaypoints = [];
-    var droneGuidance = null;
-    var guideLine = null;
-    var routingControl = null;
-    var ambulanceInterval = null;
+    // ======================================================
+    // DEFENSIVE SOCKET.IO WRAPPER
+    // Handles the case where Socket.IO fails to load (e.g.
+    // when opened via file:// or when CDN is unreachable)
+    // ======================================================
     var socket = null;
-    var zp = null;
-    var mapReady = false;
 
-    var KURNOOL_COORDS = [15.8281, 78.0373];
-
-    var HOSPITALS = [
-        { name: "KIMS Hospital", coords: [15.8132, 78.0570] },
-        { name: "OMNI Hospitals", coords: [15.82346, 78.04138] },
-        { name: "Government General Hospital", coords: [15.8203, 78.0367] },
-        { name: "Vijaya Hospital", coords: [15.8320, 78.0402] },
-        { name: "Arunodhaya Hospital", coords: [15.8226, 78.0381] },
-        { name: "Shiva Hospital", coords: [15.8284, 78.0426] },
-        { name: "Rama Hospitals", coords: [15.8220, 78.0409] },
-        { name: "Sanjeevani Multispeciality Hospital", coords: [15.8314, 78.0390] },
-        { name: "Hope Hospitals", coords: [15.8253, 78.0441] },
-        { name: "Care Hospital", coords: [15.8178, 78.0446] },
-        { name: "Sree Ram Hospital", coords: [15.8307, 78.0411] },
-        { name: "Uday Hospital", coords: [15.8210, 78.0350] },
-        { name: "Aarogya Hospital", coords: [15.8250, 78.0376] },
-        { name: "Bhadra Hospital", coords: [15.8174, 78.0425] },
-        { name: "Sri Sai Super Speciality Hospital", coords: [15.8289, 78.0455] }
-    ];
-
-    // ========== SOCKET.IO (DEFENSIVE) ==========
-    function initSocket() {
+    function initSocketConnection() {
         if (typeof io === 'undefined') {
-            console.warn('Socket.IO not loaded. Retrying...');
-            setTimeout(initSocket, 1500);
+            // Socket.IO not loaded. Retry every 2s, up to 5 times.
+            if (!window._socketRetries) window._socketRetries = 0;
+            window._socketRetries++;
+            if (window._socketRetries <= 5) {
+                setTimeout(initSocketConnection, 2000);
+            } else {
+                console.warn('Socket.IO unavailable. Running in offline mode.');
+            }
             return;
         }
         try {
-            socket = io('https://drone-ztxx.onrender.com/', {
+            socket = io('https://trigunrobotics.com/smarthealth/', {
                 path: '/socket.io',
                 transports: ['websocket', 'polling'],
                 secure: true,
@@ -1146,284 +979,223 @@
 
             socket.on('connect', function() {
                 console.log('Socket connected');
-                addLogEntry('Connected to signaling server.', 'success');
                 socket.emit('join', '108');
             });
 
             socket.on('connect_error', function(err) {
-                console.warn('Socket connection error:', err.message);
-                // Don't spam logs — only log once
-                if (!window._socketErrLogged) {
-                    addLogEntry('Signaling server unreachable. Offline mode.', 'alert');
-                    window._socketErrLogged = true;
-                }
+                console.warn('Socket connect error:', err && err.message);
             });
         } catch (e) {
-            console.error('Socket init failed:', e);
-            addLogEntry('Signaling server unreachable. Offline mode.', 'alert');
+            console.error('Socket.IO init failed:', e);
+            socket = null;
         }
     }
 
-    // ========== MAP INITIALIZATION ==========
-    function initMap() {
-        if (typeof L === 'undefined') {
-            console.error('Leaflet not loaded!');
-            addLogEntry('Leaflet failed to load. Check internet connection.', 'alert');
-            return;
+    // Safe emit helper — never crashes if socket is null
+    function safeEmit(event, data) {
+        if (socket && socket.connected) {
+            try { socket.emit(event, data); } catch (e) { console.warn('emit failed:', e); }
         }
+    }
 
-        var mapEl = document.getElementById('map');
-        if (!mapEl) {
-            console.error('#map element not found');
-            return;
+    // Kick off connection attempt
+    initSocketConnection();
+
+    // ======================================================
+    // MAIN APP
+    // ======================================================
+    let map;
+    let ambulanceMarker, hospitalMarker, droneMarker;
+    let isSimulationActive = false;
+    let currentPathIndex = 0;
+    let routeWaypoints = [];
+    let droneGuidance = null;
+    let guideLine = null;
+    let routingControl = null;
+    let ambulanceInterval;
+    const PI_CAMERA_URL = "http://trigunrobotics.com/smarthealth/";
+    const KURNOOL_COORDS = [15.8281, 78.0373];
+    
+    const HOSPITALS = [
+        { name: "KIMS Hospital", coords: [15.8132, 78.0570], type: "hospital" },
+        { name: "OMNI Hospitals", coords: [15.82346, 78.04138], type: "hospital" },
+        { name: "Government General Hospital", coords: [15.8203, 78.0367], type: "hospital" },
+        { name: "Vijaya Hospital", coords: [15.8320, 78.0402], type: "hospital" },
+        { name: "Arunodhaya Hospital", coords: [15.8226, 78.0381], type: "hospital" },
+        { name: "Shiva Hospital", coords: [15.8284, 78.0426], type: "hospital" },
+        { name: "Rama Hospitals", coords: [15.8220, 78.0409], type: "hospital" },
+        { name: "Sanjeevani Multispeciality Hospital", coords: [15.8314, 78.0390], type: "hospital" },
+        { name: "Hope Hospitals", coords: [15.8253, 78.0441], type: "hospital" },
+        { name: "Care Hospital", coords: [15.8178, 78.0446], type: "hospital" },
+        { name: "Sree Ram Hospital", coords: [15.8307, 78.0411], type: "hospital" },
+        { name: "Uday Hospital", coords: [15.8210, 78.0350], type: "hospital" },
+        { name: "Aarogya Hospital", coords: [15.8250, 78.0376], type: "hospital" },
+        { name: "Bhadra Hospital", coords: [15.8174, 78.0425], type: "hospital" },
+        { name: "Sri Sai Super Speciality Hospital", coords: [15.8289, 78.0455], type: "hospital" }  
+    ];
+
+    function initializeApp() {
+        const consoleContent = document.getElementById('console-content');
+        const simTime = document.getElementById('sim-time');
+        const gpsIndicator = document.getElementById('gps-indicator');
+        const clearPathBtn = document.getElementById('clear-path');
+        const getLocationBtn = document.getElementById('get-location');
+        const startSimBtn = document.getElementById('start-sim');
+        const deployDroneBtn = document.getElementById('deploy-drone');
+        const emergencyModeBtn = document.getElementById('emergency-mode');
+        const clearConsoleBtn = document.getElementById('clear-console');
+        const hospitalInfo = document.getElementById('hospital-info');
+        const selectedHospital = document.getElementById('selected-hospital');
+        const hospitalDistance = document.getElementById('hospital-distance');
+        const startVideoCallBtn = document.getElementById('start-video-call');
+        const videoCallContainer = document.getElementById('video-call-container');
+        const callStatusIndicator = document.getElementById('call-status-indicator');
+        const callStatusText = document.getElementById('call-status-text');
+        const videoCallHeaderText = document.getElementById('video-call-header-text');
+        const videoCallResizeHandle = document.querySelector('.video-call-resize-handle');
+
+        const currentConnection = (function() {
+            try { return JSON.parse(localStorage.getItem('currentConnection')); } catch(e) { return null; }
+        })();
+        let droneOperatorName = "Ambulance Drone";
+        let doctorName = "Doctor";
+
+        if (currentConnection && currentConnection.role === 'droneOperator') {
+            droneOperatorName = currentConnection.operatorName;
+            doctorName = currentConnection.doctorName;
+            videoCallHeaderText.textContent = `Video Call with ${doctorName}`;
+        } else if (currentConnection && currentConnection.role === 'doctor') {
+            droneOperatorName = currentConnection.droneName;
+            doctorName = currentConnection.doctorName;
+            videoCallHeaderText.textContent = `Video Call with ${doctorName}`;
+        } else {
+            videoCallHeaderText.textContent = `Video Call with Doctor`;
         }
-
-        try {
-            map = L.map('map', {
-                center: KURNOOL_COORDS,
-                zoom: 14,
-                zoomControl: true
-            });
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors',
-                maxZoom: 19
-            }).addTo(map);
-
-            // City label
-            L.marker(KURNOOL_COORDS, {
+        
+        HOSPITALS.forEach(hospital => {
+            const marker = L.marker(hospital.coords, {
                 icon: L.divIcon({
-                    className: 'city-label',
-                    html: '<div style="font-size: 16px; font-weight: bold; color: white; text-shadow: 1px 1px 3px black;">KURNOOL</div>',
-                    iconSize: [0, 0]
+                    className: 'custom-icon',
+                    html: '<i class="fas fa-hospital" style="font-size: 24px; color: var(--hospital);"></i>',
+                    iconSize: [30, 30]
                 })
             }).addTo(map);
-
-            // Traffic layer
-            var trafficLayer = L.layerGroup().addTo(map);
-            for (var i = 0; i < 50; i++) {
-                var offsetLat = (Math.random() - 0.5) * 0.1;
-                var offsetLng = (Math.random() - 0.5) * 0.1;
-                var vehiclePos = [KURNOOL_COORDS[0] + offsetLat, KURNOOL_COORDS[1] + offsetLng];
-                var vehicleType = Math.random() > 0.5 ? "car" : "bike";
-                var iconHtml = vehicleType === "car"
-                    ? '<i class="fas fa-car" style="color: #e9c46a;"></i>'
-                    : '<i class="fas fa-motorcycle" style="color: #8d99ae;"></i>';
-
-                L.marker(vehiclePos, {
-                    icon: L.divIcon({
-                        className: 'vehicle-marker',
-                        html: iconHtml,
-                        iconSize: [20, 20]
-                    })
-                }).addTo(trafficLayer);
-            }
-
-            // Add hospital markers
-            HOSPITALS.forEach(function(hospital) {
-                var marker = L.marker(hospital.coords, {
-                    icon: L.divIcon({
-                        className: 'custom-icon',
-                        html: '<i class="fas fa-hospital" style="font-size: 24px; color: #8ecae6;"></i>',
-                        iconSize: [30, 30]
-                    })
-                }).addTo(map);
-                marker.bindPopup('<strong>' + hospital.name + '</strong>');
-            });
-
-            mapReady = true;
-            console.log('Map initialized successfully');
-
-            // Force a resize after a short delay (in case layout wasn't ready)
-            setTimeout(function() {
-                if (map) map.invalidateSize();
-            }, 300);
-
-        } catch (e) {
-            console.error('Map initialization error:', e);
-            addLogEntry('Map failed to initialize: ' + e.message, 'alert');
-        }
-    }
-
-    // ========== CONSOLE LOGGING ==========
-    function addLogEntry(message, type) {
-        var consoleContent = document.getElementById('console-content');
-        if (!consoleContent) return;
-        var logEntry = document.createElement('div');
-        logEntry.className = 'log-entry';
-
-        var timestamp = document.createElement('span');
-        timestamp.className = 'log-timestamp';
-        var simTimeEl = document.getElementById('sim-time');
-        timestamp.textContent = simTimeEl ? simTimeEl.textContent : '00:00:00';
-
-        var logMessage = document.createElement('span');
-        logMessage.className = 'log-message log-' + (type || 'info');
-        logMessage.textContent = message;
-
-        logEntry.appendChild(timestamp);
-        logEntry.appendChild(logMessage);
-        consoleContent.appendChild(logEntry);
-        consoleContent.scrollTop = consoleContent.scrollHeight;
-    }
-
-    // ========== SIMULATION TIME ==========
-    function updateSimulationTime() {
-        var now = new Date();
-        var hours = now.getHours().toString().padStart(2, '0');
-        var minutes = now.getMinutes().toString().padStart(2, '0');
-        var seconds = now.getSeconds().toString().padStart(2, '0');
-        var simTimeEl = document.getElementById('sim-time');
-        if (simTimeEl) {
-            simTimeEl.textContent = hours + ':' + minutes + ':' + seconds;
-        }
-    }
-
-    // ========== GEO HELPERS ==========
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-        var R = 6371;
-        var dLat = (lat2 - lat1) * Math.PI / 180;
-        var dLon = (lon2 - lon1) * Math.PI / 180;
-        var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                Math.sin(dLon/2) * Math.sin(dLon/2);
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c;
-    }
-
-    function findNearestHospital(lat, lng) {
-        var nearest = null;
-        var minDistance = Infinity;
-        HOSPITALS.forEach(function(hospital) {
-            var d = calculateDistance(lat, lng, hospital.coords[0], hospital.coords[1]);
-            if (d < minDistance) {
-                minDistance = d;
-                nearest = hospital;
-            }
+            marker.bindPopup(`<strong>${hospital.name}</strong>`);
         });
-        return nearest;
-    }
-
-    // ========== VOICE ==========
-    function playVoiceAlert() {
-        if ('speechSynthesis' in window) {
-            try {
-                var utterance = new SpeechSynthesisUtterance("Emergency! Ambulance approaching! Please move aside!");
-                utterance.rate = 1.2;
-                utterance.pitch = 1.1;
-                utterance.volume = 1;
-                speechSynthesis.speak(utterance);
-            } catch (e) { console.warn(e); }
+        
+        getLocationBtn.addEventListener('click', function() {
+            getCurrentLocation();
+        });
+        
+        function clearPath() {
+            if (ambulanceMarker) map.removeLayer(ambulanceMarker);
+            if (hospitalMarker) map.removeLayer(hospitalMarker);
+            if (droneMarker) map.removeLayer(droneMarker);
+            if (guideLine) map.removeLayer(guideLine);
+            if (droneGuidance) map.removeLayer(droneGuidance);
+            if (routingControl) map.removeControl(routingControl);
+            if (ambulanceInterval) clearInterval(ambulanceInterval);
+            routeWaypoints = [];
+            guideLine = null;
+            droneGuidance = null;
+            currentPathIndex = 0;
+            startSimBtn.disabled = true;
+            hospitalInfo.style.display = 'none';
+            addLogEntry('Path cleared. All markers removed.', 'info');
         }
-    }
-
-    // ========== CURRENT LOCATION ==========
-    function getCurrentLocation() {
-        var gpsIndicator = document.getElementById('gps-indicator');
-        var startSimBtn = document.getElementById('start-sim');
-        var hospitalInfo = document.getElementById('hospital-info');
-
-        if (!navigator.geolocation) {
-            if (gpsIndicator) gpsIndicator.innerHTML = '<i class="fas fa-satellite gps-icon"></i> GPS Not Supported';
-            addLogEntry('Geolocation is not supported by this browser.', 'alert');
-            return;
-        }
-
-        addLogEntry('Requesting current location...', 'info');
-        if (gpsIndicator) {
+        
+        clearPathBtn.addEventListener('click', clearPath);
+        
+        function getCurrentLocation() {
+            addLogEntry('Requesting current location...', 'info');
             gpsIndicator.innerHTML = '<i class="fas fa-satellite gps-icon"></i> Acquiring GPS...';
             gpsIndicator.classList.remove('active');
-        }
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        gpsIndicator.innerHTML = `<i class="fas fa-satellite gps-icon"></i> GPS: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                        gpsIndicator.classList.add('active');
+                        
+                        map.setView([lat, lng], 16);
+                        
+                        const nearestHospital = findNearestHospital(lat, lng);
+                        createRoadRoute([lat, lng], nearestHospital.coords);
+                        
+                        selectedHospital.textContent = nearestHospital.name;
+                        const distance = calculateDistance(lat, lng, nearestHospital.coords[0], nearestHospital.coords[1]).toFixed(1);
+                        hospitalDistance.textContent = `Distance: ${distance} km`;
+                        hospitalInfo.style.display = 'block';
+                        
+                        addLogEntry(`Current location acquired: ${lat.toFixed(6)}, ${lng.toFixed(6)}`, 'success');
+                        addLogEntry(`Nearest hospital: ${nearestHospital.name} (${distance} km)`, 'info');
+                        
+                        startSimBtn.disabled = false;
 
-        navigator.geolocation.getCurrentPosition(
-            function(position) {
-                var lat = position.coords.latitude;
-                var lng = position.coords.longitude;
-
-                if (gpsIndicator) {
-                    gpsIndicator.innerHTML = '<i class="fas fa-satellite gps-icon"></i> GPS: ' + lat.toFixed(4) + ', ' + lng.toFixed(4);
-                    gpsIndicator.classList.add('active');
-                }
-
-                if (map) map.setView([lat, lng], 16);
-
-                var nearestHospital = findNearestHospital(lat, lng);
-                createRoadRoute([lat, lng], nearestHospital.coords);
-
-                var selectedHospitalEl = document.getElementById('selected-hospital');
-                var hospitalDistanceEl = document.getElementById('hospital-distance');
-                if (selectedHospitalEl) selectedHospitalEl.textContent = nearestHospital.name;
-                var distance = calculateDistance(lat, lng, nearestHospital.coords[0], nearestHospital.coords[1]).toFixed(1);
-                if (hospitalDistanceEl) hospitalDistanceEl.textContent = 'Distance: ' + distance + ' km';
-                if (hospitalInfo) hospitalInfo.style.display = 'block';
-
-                addLogEntry('Current location acquired: ' + lat.toFixed(6) + ', ' + lng.toFixed(6), 'success');
-                addLogEntry('Nearest hospital: ' + nearestHospital.name + ' (' + distance + ' km)', 'info');
-
-                if (startSimBtn) startSimBtn.disabled = false;
-
-                if (socket && socket.connected) {
-                    socket.emit('updateDroneData', {
-                        ambulance: { lat: lat, lng: lng },
-                        drone: { lat: lat, lng: lng }
-                    });
-                }
-            },
-            function(error) {
-                var errorMsg = 'Unable to retrieve your location. ';
-                switch(error.code) {
-                    case error.PERMISSION_DENIED:
-                        errorMsg += "Permission denied.";
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        errorMsg += "Location unavailable.";
-                        break;
-                    case error.TIMEOUT:
-                        errorMsg += "Request timed out.";
-                        break;
-                    default:
-                        errorMsg += "Unknown error.";
-                }
-                if (gpsIndicator) {
-                    gpsIndicator.innerHTML = '<i class="fas fa-satellite gps-icon"></i> GPS Error';
-                    gpsIndicator.classList.remove('active');
-                }
-                addLogEntry(errorMsg, 'alert');
+                        safeEmit('updateDroneData', {
+                            ambulance: { lat: lat, lng: lng },
+                            drone: { lat: lat, lng: lng }
+                        });
+                    },
+                    error => {
+                        let errorMsg = 'Unable to retrieve your location. ';
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMsg += "Permission denied. Please enable location services.";
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMsg += "Location information is unavailable.";
+                                break;
+                            case error.TIMEOUT:
+                                errorMsg += "The request to get user location timed out.";
+                                break;
+                            default:
+                                errorMsg += "An unknown error occurred.";
+                                break;
+                        }
+                        
+                        gpsIndicator.innerHTML = '<i class="fas fa-satellite gps-icon"></i> GPS Error';
+                        gpsIndicator.classList.remove('active');
+                        addLogEntry(errorMsg, 'alert');
+                    }
+                );
+            } else {
+                gpsIndicator.innerHTML = '<i class="fas fa-satellite gps-icon"></i> GPS Not Supported';
+                addLogEntry("Geolocation is not supported by this browser.", 'alert');
             }
-        );
-    }
-
-    // ========== ROUTE CREATION ==========
-    function createRoadRoute(start, end) {
-        if (!map || typeof L === 'undefined') return;
-
-        if (routingControl) {
-            try { map.removeControl(routingControl); } catch(e) {}
-            routingControl = null;
         }
-
-        if (ambulanceMarker) map.removeLayer(ambulanceMarker);
-        ambulanceMarker = L.marker(start, {
-            icon: L.divIcon({
-                className: 'ambulance-marker',
-                html: '<div>🚑<div class="siren"></div></div>',
-                iconSize: [40, 40]
-            })
-        }).addTo(map);
-
-        if (hospitalMarker) map.removeLayer(hospitalMarker);
-        hospitalMarker = L.marker(end, {
-            icon: L.divIcon({
-                className: 'hospital-marker',
-                html: '🏥',
-                iconSize: [50, 50]
-            })
-        }).addTo(map);
-
-        // Routing control
-        if (typeof L.Routing !== 'undefined') {
+        
+        function createRoadRoute(start, end) {
+            if (routingControl) {
+                map.removeControl(routingControl);
+            }
+            
+            if (ambulanceMarker) map.removeLayer(ambulanceMarker);
+            ambulanceMarker = L.marker(start, {
+                icon: L.divIcon({
+                    className: 'ambulance-marker',
+                    html: '<div>🚑<div class="siren"></div></div>',
+                    iconSize: [40, 40]
+                })
+            }).addTo(map);
+            
+            if (hospitalMarker) map.removeLayer(hospitalMarker);
+            hospitalMarker = L.marker(end, {
+                icon: L.divIcon({
+                    className: 'hospital-marker',
+                    html: '🏥',
+                    iconSize: [50, 50]
+                })
+            }).addTo(map);
+            
             routingControl = L.Routing.control({
-                waypoints: [L.latLng(start[0], start[1]), L.latLng(end[0], end[1])],
+                waypoints: [
+                    L.latLng(start[0], start[1]),
+                    L.latLng(end[0], end[1])
+                ],
                 routeWhileDragging: false,
                 showAlternatives: false,
                 lineOptions: {
@@ -1431,329 +1203,401 @@
                 },
                 createMarker: function() { return null; }
             }).addTo(map);
-
+            
             routingControl.on('routesfound', function(e) {
-                var routes = e.routes;
+                const routes = e.routes;
                 if (routes && routes.length > 0) {
-                    var route = routes[0];
+                    const route = routes[0];
                     routeWaypoints = route.coordinates;
-                    var distance = (route.summary.totalDistance / 1000).toFixed(1);
-                    var dc = document.getElementById('distance-covered');
-                    if (dc) dc.textContent = distance;
-                    addLogEntry('Road route calculated: ' + distance + ' km', 'success');
+                    const distance = (route.summary.totalDistance / 1000).toFixed(1);
+                    document.getElementById('distance-covered').textContent = distance;
+                    addLogEntry(`Road route calculated: ${distance} km`, 'success');
                 }
             });
-        } else {
-            // Fallback: straight line
-            routeWaypoints = [L.latLng(start[0], start[1]), L.latLng(end[0], end[1])];
-            L.polyline([start, end], { color: '#2a9d8f', weight: 4 }).addTo(map);
-            addLogEntry('Routing plugin unavailable. Using straight line.', 'info');
+            
+            droneMarker = L.marker(start, {
+                icon: L.divIcon({
+                    className: 'drone-marker',
+                    html: '<div class="drone-icon">✈</div>',
+                    iconSize: [30, 30]
+                })
+            });
+            
+            droneGuidance = L.marker(start, {
+                icon: L.divIcon({
+                    className: 'drone-guidance',
+                    html: '<i class="fas fa-location-arrow"></i>',
+                    iconSize: [30, 30]
+                })
+            });
         }
-
-        // Drone marker (not added to map yet)
-        droneMarker = L.marker(start, {
-            icon: L.divIcon({
-                className: 'drone-marker',
-                html: '<div class="drone-icon">✈</div>',
-                iconSize: [30, 30]
-            })
-        });
-
-        droneGuidance = L.marker(start, {
-            icon: L.divIcon({
-                className: 'drone-guidance',
-                html: '<i class="fas fa-location-arrow"></i>',
-                iconSize: [30, 30]
-            })
-        });
-    }
-
-    // ========== DRONE MOVEMENT ==========
-    function createGuideLine(from, to) {
-        if (!map || typeof L === 'undefined') return;
-        if (guideLine) map.removeLayer(guideLine);
-        guideLine = L.polyline([from, to], {
-            color: '#00ff00',
-            weight: 3,
-            dashArray: '10, 10',
-            opacity: 0.7
-        }).addTo(map);
-    }
-
-    function moveMarkerSmoothly(marker, targetPos, duration, callback) {
-        if (!marker) { if (callback) callback(); return; }
-        var startPos = marker.getLatLng();
-        var startTime = Date.now();
-
-        function animate() {
-            var now = Date.now();
-            var progress = Math.min(1, (now - startTime) / duration);
-
-            var lat = startPos.lat + (targetPos.lat - startPos.lat) * progress;
-            var lng = startPos.lng + (targetPos.lng - startPos.lng) * progress;
-
-            marker.setLatLng([lat, lng]);
-
-            if (marker === droneMarker && ambulanceMarker) {
-                createGuideLine(ambulanceMarker.getLatLng(), [lat, lng]);
-            }
-
-            if (socket && socket.connected && ambulanceMarker && droneMarker) {
-                socket.emit('updateDroneData', {
-                    ambulance: ambulanceMarker.getLatLng(),
-                    drone: droneMarker.getLatLng()
-                });
-            }
-
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            } else {
-                if (callback) callback();
+        
+        function findNearestHospital(lat, lng) {
+            let nearest = null;
+            let minDistance = Infinity;
+            
+            HOSPITALS.forEach(hospital => {
+                const distance = calculateDistance(lat, lng, hospital.coords[0], hospital.coords[1]);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearest = hospital;
+                }
+            });
+            
+            return nearest;
+        }
+        
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = deg2rad(lat2 - lat1);
+            const dLon = deg2rad(lon2 - lon1);
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+            return R * c;
+        }
+        
+        function deg2rad(deg) {
+            return deg * (Math.PI/180);
+        }
+        
+        function playVoiceAlert() {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(
+                    "Emergency! Ambulance approaching! Please move aside!"
+                );
+                utterance.rate = 1.2;
+                utterance.pitch = 1.1;
+                utterance.volume = 1;
+                speechSynthesis.speak(utterance);
             }
         }
-        requestAnimationFrame(animate);
-    }
-
-    function moveDroneAlongPath() {
-        if (currentPathIndex >= routeWaypoints.length) {
-            setTimeout(function() {
-                addLogEntry('Drone completed path clearance. Returning to ambulance.', 'success');
-                returnDrone();
-            }, 2000);
-            return;
+        
+        function createGuideLine(from, to) {
+            if (guideLine) map.removeLayer(guideLine);
+            guideLine = L.polyline([from, to], {
+                color: '#00ff00',
+                weight: 3,
+                dashArray: '10, 10',
+                opacity: 0.7
+            }).addTo(map);
         }
+        
+        function moveMarkerSmoothly(marker, targetPos, duration, callback) {
+            const startPos = marker.getLatLng();
+            const startTime = Date.now();
+            
+            function animate() {
+                const now = Date.now();
+                const progress = Math.min(1, (now - startTime) / duration);
+                
+                const lat = startPos.lat + (targetPos.lat - startPos.lat) * progress;
+                const lng = startPos.lng + (targetPos.lng - startPos.lng) * progress;
+                
+                marker.setLatLng([lat, lng]);
+                
+                if (marker === droneMarker && ambulanceMarker) {
+                    createGuideLine(ambulanceMarker.getLatLng(), [lat, lng]);
+                }
 
-        var nextPoint = routeWaypoints[currentPathIndex];
-        moveMarkerSmoothly(droneMarker, nextPoint, 100, function() {
-            if (droneGuidance) droneGuidance.setLatLng(nextPoint);
-            if (ambulanceMarker) createGuideLine(ambulanceMarker.getLatLng(), nextPoint);
-
-            if (currentPathIndex % 20 === 0) {
-                setTimeout(function() {
-                    playVoiceAlert();
-                    var vehiclesCleared = Math.floor(Math.random() * 5) + 1;
-                    var vcEl = document.getElementById('vehicles-cleared');
-                    if (vcEl) {
-                        var currentCleared = parseInt(vcEl.textContent) || 0;
-                        vcEl.textContent = currentCleared + vehiclesCleared;
-                    }
-                    addLogEntry('Cleared ' + vehiclesCleared + ' vehicles along the route', 'success');
-                }, 100);
+                if (ambulanceMarker && droneMarker) {
+                    safeEmit('updateDroneData', {
+                        ambulance: ambulanceMarker.getLatLng(),
+                        drone: droneMarker.getLatLng()
+                    });
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    if (callback) callback();
+                }
             }
-
-            currentPathIndex++;
+            
+            requestAnimationFrame(animate);
+        }
+        
+        function deployDrone() {
+            if (!routeWaypoints.length) {
+                addLogEntry('Error: No route defined for drone to follow', 'alert');
+                return;
+            }
+            
+            droneMarker.addTo(map);
+            droneGuidance.addTo(map);
+            droneMarker.setLatLng(ambulanceMarker.getLatLng());
+            droneGuidance.setLatLng(ambulanceMarker.getLatLng());
+            
+            addLogEntry('Drone deployed. Moving ahead to clear traffic path...', 'info');
+            currentPathIndex = 0;
             moveDroneAlongPath();
-        });
-    }
-
-    function startAmbulanceMovement() {
-        var ambulanceIndex = 0;
-        var speedEl = document.getElementById('ambulance-speed');
-        var ambulanceSpeed = speedEl ? parseInt(speedEl.value) : 40;
-
-        if (ambulanceInterval) clearInterval(ambulanceInterval);
-
-        ambulanceInterval = setInterval(function() {
-            if (ambulanceIndex < currentPathIndex - 5 && ambulanceIndex < routeWaypoints.length) {
-                var targetPoint = routeWaypoints[ambulanceIndex];
-                if (ambulanceMarker) ambulanceMarker.setLatLng(targetPoint);
-
-                var timeSaved = Math.floor(ambulanceIndex / 10);
-                var tsEl = document.getElementById('time-saved');
-                if (tsEl) tsEl.textContent = '0:' + timeSaved.toString().padStart(2, '0');
-
-                ambulanceIndex++;
+            startAmbulanceMovement();
+        }
+        
+        function moveDroneAlongPath() {
+            if (currentPathIndex >= routeWaypoints.length) {
+                setTimeout(() => {
+                    addLogEntry('Drone completed path clearance. Returning to ambulance.', 'success');
+                    returnDrone();
+                }, 2000);
+                return;
             }
-            if (ambulanceIndex >= routeWaypoints.length) {
-                clearInterval(ambulanceInterval);
-            }
-        }, Math.max(50, 200 - ambulanceSpeed));
-    }
-
-    function deployDrone() {
-        if (!routeWaypoints.length) {
-            addLogEntry('Error: No route defined for drone to follow', 'alert');
-            return;
-        }
-        if (!map || !droneMarker || !ambulanceMarker) {
-            addLogEntry('Error: Map or markers not ready', 'alert');
-            return;
-        }
-
-        droneMarker.addTo(map);
-        if (droneGuidance) droneGuidance.addTo(map);
-        droneMarker.setLatLng(ambulanceMarker.getLatLng());
-        if (droneGuidance) droneGuidance.setLatLng(ambulanceMarker.getLatLng());
-
-        addLogEntry('Drone deployed. Moving ahead to clear traffic path...', 'info');
-        currentPathIndex = 0;
-        moveDroneAlongPath();
-        startAmbulanceMovement();
-    }
-
-    function returnDrone() {
-        if (!ambulanceMarker || !droneMarker) return;
-        var ambulancePos = ambulanceMarker.getLatLng();
-        moveMarkerSmoothly(droneMarker, ambulancePos, 3000, function() {
-            if (droneMarker) map.removeLayer(droneMarker);
-            if (droneGuidance) map.removeLayer(droneGuidance);
-            addLogEntry('Drone returned and docked. Mission successful!', 'success');
-            if (guideLine) {
-                map.removeLayer(guideLine);
-                guideLine = null;
-            }
-        });
-    }
-
-    function startSimulation() {
-        if (!routeWaypoints.length) {
-            addLogEntry('Error: Please define a route before starting simulation', 'alert');
-            return;
-        }
-        isSimulationActive = true;
-        var startSimBtn = document.getElementById('start-sim');
-        var deployDroneBtn = document.getElementById('deploy-drone');
-        var emergencyModeBtn = document.getElementById('emergency-mode');
-        if (startSimBtn) startSimBtn.disabled = true;
-        if (deployDroneBtn) deployDroneBtn.disabled = false;
-        if (emergencyModeBtn) emergencyModeBtn.disabled = false;
-        addLogEntry('Simulation started. Ready to deploy drone.', 'info');
-    }
-
-    function clearPath() {
-        if (ambulanceMarker) { map.removeLayer(ambulanceMarker); ambulanceMarker = null; }
-        if (hospitalMarker) { map.removeLayer(hospitalMarker); hospitalMarker = null; }
-        if (droneMarker) { map.removeLayer(droneMarker); droneMarker = null; }
-        if (guideLine) { map.removeLayer(guideLine); guideLine = null; }
-        if (droneGuidance) { map.removeLayer(droneGuidance); droneGuidance = null; }
-        if (routingControl) { try { map.removeControl(routingControl); } catch(e) {} routingControl = null; }
-        if (ambulanceInterval) { clearInterval(ambulanceInterval); ambulanceInterval = null; }
-        routeWaypoints = [];
-        currentPathIndex = 0;
-        var startSimBtn = document.getElementById('start-sim');
-        var hospitalInfo = document.getElementById('hospital-info');
-        if (startSimBtn) startSimBtn.disabled = true;
-        if (hospitalInfo) hospitalInfo.style.display = 'none';
-        addLogEntry('Path cleared. All markers removed.', 'info');
-    }
-
-    // ========== VIDEO CALL ==========
-    function startVideoCall() {
-        var videoCallContainer = document.getElementById('video-call-container');
-        var callStatusIndicator = document.getElementById('call-status-indicator');
-        var callStatusText = document.getElementById('call-status-text');
-        var videoCallHeaderText = document.getElementById('video-call-header-text');
-
-        if (!videoCallContainer) return;
-
-        // Determine names from localStorage
-        var currentConnection = null;
-        try { currentConnection = JSON.parse(localStorage.getItem('currentConnection')); } catch(e) {}
-        var droneOperatorName = "Ambulance Drone";
-        var doctorName = "Doctor";
-        if (currentConnection && currentConnection.role === 'droneOperator') {
-            droneOperatorName = currentConnection.operatorName;
-            doctorName = currentConnection.doctorName;
-        } else if (currentConnection && currentConnection.role === 'doctor') {
-            droneOperatorName = currentConnection.droneName;
-            doctorName = currentConnection.doctorName;
-        }
-        if (videoCallHeaderText) videoCallHeaderText.textContent = 'Video Call with ' + doctorName;
-
-        videoCallContainer.style.display = 'flex';
-        if (callStatusIndicator) callStatusIndicator.style.backgroundColor = 'orange';
-        if (callStatusText) callStatusText.textContent = 'Connecting...';
-
-        if (typeof ZegoUIKitPrebuilt === 'undefined') {
-            addLogEntry('Video service not loaded. Check internet.', 'alert');
-            if (callStatusText) callStatusText.textContent = 'Service unavailable';
-            return;
-        }
-
-        try {
-            var roomID = '108_emergency';
-            var userID = 'drone_' + Math.floor(Math.random() * 10000);
-            var userName = droneOperatorName;
-            var appID = 97925736;
-            var serverSecret = "c658d619ed9495866b0645237b4ef580";
-
-            var kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomID, userID, userName);
-            zp = ZegoUIKitPrebuilt.create(kitToken);
-            zp.joinRoom({
-                container: document.querySelector("#zego-video-container"),
-                scenario: { mode: ZegoUIKitPrebuilt.VideoConference },
-                turnOnMicrophoneWhenJoining: true,
-                turnOnCameraWhenJoining: true,
-                showMyCameraToggleButton: true,
-                showMyMicrophoneToggleButton: true,
-                showAudioVideoSettingsButton: true,
-                showScreenSharingButton: false,
-                showTextChat: true,
-                showUserList: true,
-                maxUsers: 2,
-                layout: "Auto",
-                showLayoutButton: false,
+            
+            const nextPoint = routeWaypoints[currentPathIndex];
+            moveMarkerSmoothly(droneMarker, nextPoint, 100, () => {
+                droneGuidance.setLatLng(nextPoint);
+                createGuideLine(ambulanceMarker.getLatLng(), nextPoint);
+                
+                if (currentPathIndex % 20 === 0) {
+                    setTimeout(() => {
+                        playVoiceAlert();
+                        const vehiclesCleared = Math.floor(Math.random() * 5) + 1;
+                        const currentCleared = parseInt(document.getElementById('vehicles-cleared').textContent);
+                        document.getElementById('vehicles-cleared').textContent = currentCleared + vehiclesCleared;
+                        addLogEntry(`Cleared ${vehiclesCleared} vehicles along the route`, 'success');
+                    }, 100);
+                }
+                
+                currentPathIndex++;
+                moveDroneAlongPath();
             });
-
-            zp.on('roomStateChanged', function(state) {
-                if (state === 'CONNECTED') {
-                    if (callStatusIndicator) callStatusIndicator.style.backgroundColor = 'green';
-                    if (callStatusText) callStatusText.textContent = 'Connected';
-                    addLogEntry('Video call connected with doctor.', 'success');
-                } else if (state === 'DISCONNECTED') {
-                    if (callStatusIndicator) callStatusIndicator.style.backgroundColor = 'red';
-                    if (callStatusText) callStatusText.textContent = 'Disconnected';
-                    videoCallContainer.style.display = 'none';
-                    addLogEntry('Video call ended.', 'info');
+        }
+        
+        function startAmbulanceMovement() {
+            let ambulanceIndex = 0;
+            const ambulanceSpeed = parseInt(document.getElementById('ambulance-speed').value);
+            
+            if (ambulanceInterval) clearInterval(ambulanceInterval);
+            
+            ambulanceInterval = setInterval(() => {
+                if (ambulanceIndex < currentPathIndex - 5 && ambulanceIndex < routeWaypoints.length) {
+                    const targetPoint = routeWaypoints[ambulanceIndex];
+                    ambulanceMarker.setLatLng(targetPoint);
+                    
+                    const timeSaved = Math.floor(ambulanceIndex / 10);
+                    document.getElementById('time-saved').textContent = `0:${timeSaved.toString().padStart(2, '0')}`;
+                    
+                    ambulanceIndex++;
+                }
+                
+                if (ambulanceIndex >= routeWaypoints.length) {
+                    clearInterval(ambulanceInterval);
+                }
+            }, 200 - (ambulanceSpeed));
+        }
+        
+        function returnDrone() {
+            const ambulancePos = ambulanceMarker.getLatLng();
+            moveMarkerSmoothly(droneMarker, ambulancePos, 3000, () => {
+                map.removeLayer(droneMarker);
+                map.removeLayer(droneGuidance);
+                addLogEntry('Drone returned and docked. Mission successful!', 'success');
+                
+                if (guideLine) {
+                    map.removeLayer(guideLine);
+                    guideLine = null;
                 }
             });
-
-            addLogEntry('Initiating video call with doctor...', 'info');
-        } catch (e) {
-            console.error('Video call error:', e);
-            addLogEntry('Video call failed: ' + e.message, 'alert');
         }
-    }
+        
+        function startSimulation() {
+            if (!routeWaypoints.length) {
+                addLogEntry('Error: Please define a route before starting simulation', 'alert');
+                return;
+            }
+            
+            isSimulationActive = true;
+            startSimBtn.disabled = true;
+            deployDroneBtn.disabled = false;
+            emergencyModeBtn.disabled = false;
+            addLogEntry('Simulation started. Ready to deploy drone.', 'info');
+        }
+        
+        function addLogEntry(message, type) {
+            const consoleContent = document.getElementById('console-content');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            
+            const timestamp = document.createElement('span');
+            timestamp.className = 'log-timestamp';
+            timestamp.textContent = document.getElementById('sim-time').textContent;
+            
+            const logMessage = document.createElement('span');
+            logMessage.className = `log-message log-${type}`;
+            logMessage.textContent = message;
+            
+            logEntry.appendChild(timestamp);
+            logEntry.appendChild(logMessage);
+            
+            consoleContent.appendChild(logEntry);
+            consoleContent.scrollTop = consoleContent.scrollHeight;
+        }
+        
+        function updateSimulationTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            
+            document.getElementById('sim-time').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+        
+        deployDroneBtn.addEventListener('click', deployDrone);
+        emergencyModeBtn.addEventListener('click', function() {
+            addLogEntry('EMERGENCY MODE ACTIVATED! Maximum priority clearance requested.', 'alert');
+            deployDrone();
+        });
+        
+        clearConsoleBtn.addEventListener('click', function() {
+            document.getElementById('console-content').innerHTML = '';
+            addLogEntry('Console cleared. System operational.', 'info');
+        });
+        
+        startSimBtn.addEventListener('click', startSimulation);
+        
+        const sliders = document.querySelectorAll('.slider');
+        sliders.forEach(slider => {
+            const valueDisplay = slider.nextElementSibling;
+            slider.addEventListener('input', function() {
+                if (this.id === 'traffic-density') {
+                    valueDisplay.textContent = `${this.value}%`;
+                } else if (this.id === 'drone-volume') {
+                    valueDisplay.textContent = `${this.value}%`;
+                } else if (this.id === 'ambulance-speed') {
+                    valueDisplay.textContent = `${this.value} km/h`;
+                }
+            });
+        });
+        
+        setInterval(updateSimulationTime, 1000);
 
-    // ========== DRAGGABLE + RESIZABLE VIDEO CONTAINER ==========
-    function setupDraggableResizable() {
-        var videoCallContainer = document.getElementById('video-call-container');
-        var videoCallHeader = document.querySelector('.video-call-header');
-        var videoCallResizeHandle = document.querySelector('.video-call-resize-handle');
-        if (!videoCallContainer || !videoCallHeader || !videoCallResizeHandle) return;
+        startVideoCallBtn.addEventListener('click', function() {
+            videoCallContainer.style.display = 'flex';
+            callStatusIndicator.style.backgroundColor = 'orange';
+            callStatusText.textContent = 'Connecting...';
+            
+            if (typeof ZegoUIKitPrebuilt === 'undefined') {
+                addLogEntry('Video service not loaded. Check internet.', 'alert');
+                callStatusText.textContent = 'Service unavailable';
+                return;
+            }
+            
+            try {
+                const roomID = '108_emergency';
+                const userID = 'drone_' + Math.floor(Math.random() * 10000);
+                const userName = droneOperatorName;
+                const appID = 1986706440;
+                const serverSecret = "c5c2b752e9cf64e6a1aa56e18ba883f4";
+                
+                const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
+                    appID, serverSecret, roomID, userID, userName
+                );
+                
+                const zp = ZegoUIKitPrebuilt.create(kitToken);
+                zp.joinRoom({
+                    container: document.querySelector("#zego-video-container"),
+                    scenario: { mode: ZegoUIKitPrebuilt.VideoConference },
+                    turnOnMicrophoneWhenJoining: true,
+                    turnOnCameraWhenJoining: true,
+                    showMyCameraToggleButton: true,
+                    showMyMicrophoneToggleButton: true,
+                    showAudioVideoSettingsButton: true,
+                    showScreenSharingButton: false,
+                    showTextChat: true,
+                    showUserList: true,
+                    maxUsers: 2,
+                    layout: "Auto",
+                    showLayoutButton: false,
+                });
+                
+                zp.on('roomStateChanged', (state) => {
+                    if (state === 'CONNECTED') {
+                        callStatusIndicator.style.backgroundColor = 'green';
+                        callStatusText.textContent = 'Connected';
+                        addLogEntry('Video call connected with doctor.', 'success');
+                    } else if (state === 'DISCONNECTED') {
+                        callStatusIndicator.style.backgroundColor = 'red';
+                        callStatusText.textContent = 'Disconnected';
+                        videoCallContainer.style.display = 'none';
+                        addLogEntry('Video call ended.', 'info');
+                    }
+                });
+                
+                addLogEntry('Initiating video call with doctor...', 'info');
+            } catch(e) {
+                console.error('Video call error:', e);
+                addLogEntry('Video call failed: ' + e.message, 'alert');
+            }
+        });
 
-        var isDragging = false, offsetX = 0, offsetY = 0;
+        document.getElementById("trigger-emergency").addEventListener("click", function () {
+            addLogEntry("🚨 Emergency 108 call received!", "alert");
+            getCurrentLocation();
+            
+            setTimeout(() => {
+                addLogEntry("🛫 Dispatching drone to accident site...", "info");
+                startSimulation();
+                
+                setTimeout(() => {
+                    deployDrone();
+                    setTimeout(() => {
+                        document.getElementById("doctor-monitoring").style.display = "block";
+                        addLogEntry("📡 Live feed sent to doctor. Monitoring patient condition...", "info");
+                        playVoiceAlert();
+                    }, 5000);
+                }, 3000);
+            }, 2000);
+        });
 
-        function getEventCoords(e) { return e.touches ? e.touches[0] : e; }
+        document.getElementById("doctor-close-panel").addEventListener("click", function () {
+            document.getElementById("doctor-monitoring").style.display = "none";
+            addLogEntry("✅ Doctor acknowledged. Route finalized to hospital.", "success");
+        });
+
+        // ===== Drag video call container =====
+        const videoCallHeader = document.querySelector('.video-call-header');
+        const videoCallContainerElement = document.getElementById('video-call-container');
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        function getEventCoords(e) {
+            return e.touches ? e.touches[0] : e;
+        }
 
         function startDrag(e) {
             isDragging = true;
-            var coords = getEventCoords(e);
-            var rect = videoCallContainer.getBoundingClientRect();
+            const coords = getEventCoords(e);
+            const rect = videoCallContainerElement.getBoundingClientRect();
             offsetX = coords.clientX - rect.left;
             offsetY = coords.clientY - rect.top;
-            videoCallContainer.style.transition = 'none';
+            videoCallContainerElement.style.cursor = 'grabbing';
+            videoCallContainerElement.style.transition = 'none';
             if (e.type === 'touchstart') e.preventDefault();
         }
 
         function doDrag(e) {
             if (!isDragging) return;
-            var coords = getEventCoords(e);
-            var newX = coords.clientX - offsetX;
-            var newY = coords.clientY - offsetY;
-            var vw = window.innerWidth, vh = window.innerHeight;
-            var cw = videoCallContainer.offsetWidth, ch = videoCallContainer.offsetHeight;
-            newX = Math.max(0, Math.min(newX, vw - cw));
-            newY = Math.max(0, Math.min(newY, vh - ch));
-            videoCallContainer.style.left = newX + 'px';
-            videoCallContainer.style.top = newY + 'px';
-            videoCallContainer.style.transform = 'none';
+            const coords = getEventCoords(e);
+            let newX = coords.clientX - offsetX;
+            let newY = coords.clientY - offsetY;
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const containerWidth = videoCallContainerElement.offsetWidth;
+            const containerHeight = videoCallContainerElement.offsetHeight;
+            newX = Math.max(0, Math.min(newX, viewportWidth - containerWidth));
+            newY = Math.max(0, Math.min(newY, viewportHeight - containerHeight));
+            videoCallContainerElement.style.left = `${newX}px`;
+            videoCallContainerElement.style.top = `${newY}px`;
+            videoCallContainerElement.style.transform = 'none';
             if (e.type === 'touchmove') e.preventDefault();
         }
 
         function endDrag() {
             isDragging = false;
-            videoCallContainer.style.transition = '';
+            videoCallContainerElement.style.cursor = 'grab';
+            videoCallContainerElement.style.transition = '';
         }
 
         videoCallHeader.addEventListener('mousedown', startDrag);
@@ -1763,39 +1607,44 @@
         document.addEventListener('touchmove', doDrag, { passive: false });
         document.addEventListener('touchend', endDrag);
         document.addEventListener('touchcancel', endDrag);
+        videoCallHeader.addEventListener('selectstart', (e) => e.preventDefault());
 
-        var isResizing = false, startWidth, startHeight, startX, startY;
+        // ===== Resize video call container =====
+        let isResizing = false;
+        let startWidth, startHeight, startX, startY;
 
         function startResize(e) {
             isResizing = true;
-            var coords = getEventCoords(e);
+            const coords = getEventCoords(e);
             startWidth = videoCallContainer.offsetWidth;
             startHeight = videoCallContainer.offsetHeight;
             startX = coords.clientX;
             startY = coords.clientY;
             videoCallContainer.style.transition = 'none';
+            videoCallContainer.style.overflow = 'visible';
             if (e.type === 'touchstart') e.preventDefault();
         }
 
         function doResize(e) {
             if (!isResizing) return;
-            var coords = getEventCoords(e);
-            var newWidth = startWidth + (coords.clientX - startX);
-            var newHeight = startHeight + (coords.clientY - startY);
-            var minWidth = parseInt(getComputedStyle(videoCallContainer).minWidth) || 200;
-            var minHeight = parseInt(getComputedStyle(videoCallContainer).minHeight) || 150;
-            var maxWidth = window.innerWidth * 0.9;
-            var maxHeight = window.innerHeight * 0.9;
+            const coords = getEventCoords(e);
+            let newWidth = startWidth + (coords.clientX - startX);
+            let newHeight = startHeight + (coords.clientY - startY);
+            const minWidth = parseInt(getComputedStyle(videoCallContainer).minWidth) || 200;
+            const minHeight = parseInt(getComputedStyle(videoCallContainer).minHeight) || 150;
+            const maxWidth = window.innerWidth * 0.9;
+            const maxHeight = window.innerHeight * 0.9;
             newWidth = Math.max(minWidth, Math.min(newWidth, maxWidth));
             newHeight = Math.max(minHeight, Math.min(newHeight, maxHeight));
-            videoCallContainer.style.width = newWidth + 'px';
-            videoCallContainer.style.height = newHeight + 'px';
+            videoCallContainer.style.width = `${newWidth}px`;
+            videoCallContainer.style.height = `${newHeight}px`;
             if (e.type === 'touchmove') e.preventDefault();
         }
 
         function endResize() {
             isResizing = false;
             videoCallContainer.style.transition = '';
+            videoCallContainer.style.overflow = 'hidden';
         }
 
         videoCallResizeHandle.addEventListener('mousedown', startResize);
@@ -1806,116 +1655,51 @@
         document.addEventListener('touchend', endResize);
         document.addEventListener('touchcancel', endResize);
     }
-
-    // ========== EMERGENCY ==========
-    function setupEmergency() {
-        var triggerBtn = document.getElementById('trigger-emergency');
-        if (!triggerBtn) return;
-        triggerBtn.addEventListener('click', function() {
-            addLogEntry('🚨 Emergency 108 call received!', 'alert');
-            getCurrentLocation();
-
-            setTimeout(function() {
-                addLogEntry('🛫 Dispatching drone to accident site...', 'info');
-                startSimulation();
-
-                setTimeout(function() {
-                    deployDrone();
-                    setTimeout(function() {
-                        var dm = document.getElementById('doctor-monitoring');
-                        if (dm) dm.style.display = 'block';
-                        addLogEntry('📡 Live feed sent to doctor. Monitoring patient condition...', 'info');
-                        playVoiceAlert();
-                    }, 5000);
-                }, 3000);
-            }, 2000);
-        });
-
-        var closeBtn = document.getElementById('doctor-close-panel');
-        if (closeBtn) closeBtn.addEventListener('click', function() {
-            var dm = document.getElementById('doctor-monitoring');
-            if (dm) dm.style.display = 'none';
-            addLogEntry('✅ Doctor acknowledged. Route finalized to hospital.', 'success');
-        });
+    
+    function initMap() {
+        if (typeof L === 'undefined') {
+            console.error('Leaflet not loaded!');
+            return;
+        }
+        map = L.map('map').setView(KURNOOL_COORDS, 14);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        L.marker(KURNOOL_COORDS, {
+            icon: L.divIcon({
+                className: 'city-label',
+                html: '<div style="font-size: 16px; font-weight: bold; color: white; text-shadow: 1px 1px 3px black;">KURNOOL</div>',
+                iconSize: [0, 0]
+            })
+        }).addTo(map);
+        
+        const trafficLayer = L.layerGroup().addTo(map);
+        for (let i = 0; i < 50; i++) {
+            const offsetLat = (Math.random() - 0.5) * 0.1;
+            const offsetLng = (Math.random() - 0.5) * 0.1;
+            const vehiclePos = [KURNOOL_COORDS[0] + offsetLat, KURNOOL_COORDS[1] + offsetLng];
+            const vehicleType = Math.random() > 0.5 ? "car" : "bike";
+            const iconHtml = vehicleType === "car" ? 
+                '<i class="fas fa-car" style="color: #e9c46a;"></i>' : 
+                '<i class="fas fa-motorcycle" style="color: #8d99ae;"></i>';
+            L.marker(vehiclePos, {
+                icon: L.divIcon({
+                    className: 'vehicle-marker',
+                    html: iconHtml,
+                    iconSize: [20, 20]
+                })
+            }).addTo(trafficLayer);
+        }
+        
+        setTimeout(function() { if (map) map.invalidateSize(); }, 300);
     }
-
-    // ========== MAIN INIT ==========
-    function initApp() {
-        // 1. Initialize map FIRST (so all later code can use it)
+    
+    document.addEventListener('DOMContentLoaded', function() {
         initMap();
-
-        // 2. Socket.IO
-        initSocket();
-
-        // 3. Simulation clock
-        setInterval(updateSimulationTime, 1000);
-
-        // 4. Wire up buttons
-        var clearPathBtn = document.getElementById('clear-path');
-        if (clearPathBtn) clearPathBtn.addEventListener('click', clearPath);
-
-        var getLocationBtn = document.getElementById('get-location');
-        if (getLocationBtn) getLocationBtn.addEventListener('click', getCurrentLocation);
-
-        var deployDroneBtn = document.getElementById('deploy-drone');
-        if (deployDroneBtn) deployDroneBtn.addEventListener('click', deployDrone);
-
-        var emergencyModeBtn = document.getElementById('emergency-mode');
-        if (emergencyModeBtn) emergencyModeBtn.addEventListener('click', function() {
-            addLogEntry('EMERGENCY MODE ACTIVATED! Maximum priority clearance requested.', 'alert');
-            deployDrone();
-        });
-
-        var clearConsoleBtn = document.getElementById('clear-console');
-        if (clearConsoleBtn) clearConsoleBtn.addEventListener('click', function() {
-            var cc = document.getElementById('console-content');
-            if (cc) cc.innerHTML = '';
-            addLogEntry('Console cleared. System operational.', 'info');
-        });
-
-        var startSimBtn = document.getElementById('start-sim');
-        if (startSimBtn) startSimBtn.addEventListener('click', startSimulation);
-
-        var startVideoCallBtn = document.getElementById('start-video-call');
-        if (startVideoCallBtn) startVideoCallBtn.addEventListener('click', startVideoCall);
-
-        // 5. Sliders
-        var sliders = document.querySelectorAll('.slider');
-        sliders.forEach(function(slider) {
-            var valueDisplay = slider.nextElementSibling;
-            slider.addEventListener('input', function() {
-                if (this.id === 'traffic-density') {
-                    if (valueDisplay) valueDisplay.textContent = this.value + '%';
-                } else if (this.id === 'drone-volume') {
-                    if (valueDisplay) valueDisplay.textContent = this.value + '%';
-                } else if (this.id === 'ambulance-speed') {
-                    if (valueDisplay) valueDisplay.textContent = this.value + ' km/h';
-                }
-            });
-        });
-
-        // 6. Emergency
-        setupEmergency();
-
-        // 7. Draggable/resizable video
-        setupDraggableResizable();
-
-        // 8. Handle window resize -> invalidate map size
-        window.addEventListener('resize', function() {
-            if (map) setTimeout(function() { map.invalidateSize(); }, 200);
-        });
-
-        // 9. Initial log
-        addLogEntry('System ready. Click "Get Current Location" to begin.', 'info');
-    }
-
-    // Run when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initApp);
-    } else {
-        initApp();
-    }
-})();
+        initializeApp();
+    });
 </script>
 </body>
 </html>
